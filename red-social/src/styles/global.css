@@ -1,0 +1,222 @@
+/* Estilos globales para la red social Giftie */
+/* Fondo matizado como WhatsApp con verde agua como color principal */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* Variables CSS para el sistema de colores */
+:root {
+  /* Verde agua principal */
+  --primary-50: #f0fdfa;
+  --primary-100: #ccfbf1;
+  --primary-200: #99f6e4;
+  --primary-300: #5eead4;
+  --primary-400: #2dd4bf;
+  --primary-500: #14b8a6;
+  --primary-600: #0d9488;
+  --primary-700: #0f766e;
+  --primary-800: #115e59;
+  --primary-900: #134e4a;
+
+  /* Fondo matizado como WhatsApp */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --bg-tertiary: #e2e8f0;
+  --bg-card: #ffffff;
+
+  /* Texto */
+  --text-primary: #1e293b;
+  --text-secondary: #475569;
+  --text-tertiary: #64748b;
+  --text-muted: #94a3b8;
+
+  /* Bordes */
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-dark: #94a3b8;
+
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Reset y estilos base */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f0f2f5;
+  background-image: url('/src/assets/background.png');
+  background-repeat: repeat;
+  background-size: 250px 250px;
+  background-position: 0 0;
+  
+  color: var(--text-primary);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+}
+
+/* Estilos para tarjetas mejoradas */
+.giftie-card {
+  background: var(--bg-card);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--border-light);
+  transition: all 0.2s ease-in-out;
+}
+
+.giftie-card:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Botones con estilo profesional */
+.giftie-button-primary {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: none;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.2s ease-in-out;
+}
+
+.giftie-button-primary:hover {
+  background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-700) 100%);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Inputs con estilo moderno */
+.giftie-input {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 0.875rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.giftie-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
+}
+
+/* Chips y etiquetas */
+.giftie-chip {
+  background: var(--primary-50);
+  color: var(--primary-700);
+  border: 1px solid var(--primary-200);
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+/* Animaciones sutiles */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Animación para el fondo con regalos */
+@keyframes giftieFloat {
+  0%, 100% {
+    background-position: 
+      0 0, 80px 40px, 160px 20px, 240px 60px, 320px 30px,
+      40px 120px, 120px 100px, 200px 140px, 280px 80px, 360px 110px;
+  }
+  25% {
+    background-position: 
+      5px 5px, 85px 45px, 165px 25px, 245px 65px, 325px 35px,
+      45px 125px, 125px 105px, 205px 145px, 285px 85px, 365px 115px;
+  }
+  50% {
+    background-position: 
+      10px 10px, 90px 50px, 170px 30px, 250px 70px, 330px 40px,
+      50px 130px, 130px 110px, 210px 150px, 290px 90px, 370px 120px;
+  }
+  75% {
+    background-position: 
+      7px 7px, 87px 47px, 167px 27px, 247px 67px, 327px 37px,
+      47px 127px, 127px 107px, 207px 147px, 287px 87px, 367px 117px;
+  }
+}
+
+.giftie-animate {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Scrollbar personalizado */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-dark);
+}
+
+/* Estilos para imágenes de deseos */
+.wish-image {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+/* Estilos para el header */
+.giftie-header {
+  background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+  box-shadow: 0 4px 20px rgba(20, 184, 166, 0.15);
+}
+
+/* Estilos para las pestañas de navegación */
+.giftie-tabs {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 4px;
+}
+
+.giftie-tab {
+  color: var(--text-secondary);
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.2s ease-in-out;
+}
+
+.giftie-tab.active {
+  color: var(--primary-500);
+  background: var(--bg-card);
+  box-shadow: 0 2px 8px rgba(20, 184, 166, 0.15);
+}
+
+.giftie-tab:hover {
+  background: var(--primary-50);
+  color: var(--primary-600);
+}

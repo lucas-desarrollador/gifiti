@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Fondo Final - Giftie</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            background-image: url('./src/assets/background.png');
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            background-position: 0 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+        
+        .size-controls {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        
+        .size-controls button {
+            margin: 5px;
+            padding: 8px 16px;
+            border: 1px solid #14b8a6;
+            background: white;
+            color: #14b8a6;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .size-controls button:hover {
+            background: #14b8a6;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 Giftie - Fondo con tu Imagen Exacta</h1>
+            <p>Tu imagen "background.png" como fondo mosaico</p>
+        </div>
+        
+        <h2>✅ Fondo implementado:</h2>
+        <ul>
+            <li><strong>Imagen:</strong> Tu archivo "background.png" exacto</li>
+            <li><strong>Modo:</strong> Mosaico (repeat)</li>
+            <li><strong>Tamaño:</strong> 200px x 200px por tile</li>
+            <li><strong>Sin modificaciones:</strong> Imagen original intacta</li>
+        </ul>
+        
+        <div class="size-controls">
+            <h3>🔧 Ajustar tamaño del mosaico:</h3>
+            <button onclick="document.body.style.backgroundSize='150px 150px'">Pequeño (150px)</button>
+            <button onclick="document.body.style.backgroundSize='200px 200px'">Mediano (200px)</button>
+            <button onclick="document.body.style.backgroundSize='250px 250px'">Grande (250px)</button>
+            <button onclick="document.body.style.backgroundSize='300px 300px'">Muy Grande (300px)</button>
+        </div>
+        
+        <h2>🎨 Características:</h2>
+        <ul>
+            <li>Imagen exacta sin modificaciones</li>
+            <li>Repetición en mosaico para cubrir toda la pantalla</li>
+            <li>Fondo gris claro como respaldo</li>
+            <li>Tamaño ajustable según preferencia</li>
+        </ul>
+        
+        <button class="button" onclick="window.location.href='http://localhost:5174'">
+            🚀 Ir a la Aplicación Principal
+        </button>
+        
+        <p style="margin-top: 30px; color: #64748b; font-size: 0.9em;">
+            Si el tamaño no se ve bien, puedes ajustarlo con los botones de arriba.
+        </p>
+    </div>
+</body>
+</html>

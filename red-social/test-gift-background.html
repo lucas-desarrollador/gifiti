@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Fondo con Regalitos - Giftie</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+            background-image: 
+                /* Regalitos pequeños */
+                url('./src/assets/gift-small.svg'),
+                url('./src/assets/gift-small.svg'),
+                url('./src/assets/gift-small.svg'),
+                url('./src/assets/gift-small.svg'),
+                /* Regalitos grandes */
+                url('./src/assets/gift-large.svg'),
+                url('./src/assets/gift-large.svg'),
+                url('./src/assets/gift-large.svg');
+            
+            background-size: 
+                40px 40px, 45px 45px, 35px 35px, 50px 50px,
+                60px 60px, 70px 70px, 55px 55px;
+            
+            background-position: 
+                0 0, 60px 60px, 120px 30px, 180px 90px,
+                30px 120px, 90px 180px, 150px 60px;
+            
+            animation: giftieFloat 30s ease-in-out infinite;
+        }
+
+        @keyframes giftieFloat {
+            0%, 100% {
+                background-position: 
+                    0 0, 60px 60px, 120px 30px, 180px 90px,
+                    30px 120px, 90px 180px, 150px 60px;
+            }
+            25% {
+                background-position: 
+                    10px 10px, 70px 70px, 130px 40px, 190px 100px,
+                    40px 130px, 100px 190px, 160px 70px;
+            }
+            50% {
+                background-position: 
+                    20px 20px, 80px 80px, 140px 50px, 200px 110px,
+                    50px 140px, 110px 200px, 170px 80px;
+            }
+            75% {
+                background-position: 
+                    15px 15px, 75px 75px, 135px 45px, 195px 105px,
+                    45px 135px, 105px 195px, 165px 75px;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+
+        .gift-preview {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            justify-content: center;
+        }
+
+        .gift-box {
+            width: 60px;
+            height: 60px;
+            border: 2px solid #14b8a6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f0fdfa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 Giftie - Fondo con Regalitos Reales</h1>
+            <p>¿Puedes ver los regalitos SVG en el fondo?</p>
+        </div>
+        
+        <h2>✅ Fondo implementado con imágenes SVG:</h2>
+        <ul>
+            <li><strong>Color base:</strong> Gris claro (#f8fafc)</li>
+            <li><strong>Patrón:</strong> Regalitos SVG verde agua en diferentes tamaños</li>
+            <li><strong>Animación:</strong> Movimiento sutil de 30 segundos</li>
+            <li><strong>Regalitos:</strong> 4 pequeños (40px) + 3 grandes (60px)</li>
+        </ul>
+        
+        <h2>🎨 Características de los regalitos:</h2>
+        <ul>
+            <li>Regalitos pequeños: 40px x 40px</li>
+            <li>Regalitos grandes: 60px x 60px</li>
+            <li>Colores verde agua con opacidad</li>
+            <li>Animación suave que no distrae</li>
+            <li>Posiciones aleatorias para patrón natural</li>
+        </ul>
+        
+        <div class="gift-preview">
+            <div class="gift-box">
+                <span style="font-size: 24px;">🎁</span>
+            </div>
+            <div class="gift-box">
+                <span style="font-size: 24px;">🎁</span>
+            </div>
+            <div class="gift-box">
+                <span style="font-size: 24px;">🎁</span>
+            </div>
+        </div>
+        
+        <button class="button" onclick="window.location.href='http://localhost:5174'">
+            🚀 Ir a la Aplicación Principal
+        </button>
+        
+        <p style="margin-top: 30px; color: #64748b; font-size: 0.9em;">
+            Si no ves los regalitos SVG, puede ser que el navegador no esté cargando las imágenes correctamente.
+        </p>
+    </div>
+</body>
+</html>

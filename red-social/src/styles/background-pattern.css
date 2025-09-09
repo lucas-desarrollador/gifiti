@@ -1,0 +1,107 @@
+/* Patrón de fondo con regalos - Inspirado en WhatsApp pero con regalos */
+.giftie-background {
+  background-color: #f1f5f9; /* Fondo base sutil */
+  background-image: 
+    /* Regalos principales */
+    radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.08) 1px, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(20, 184, 166, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 40% 60%, rgba(20, 184, 166, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(20, 184, 166, 0.07) 1px, transparent 1px),
+    radial-gradient(circle at 90% 10%, rgba(20, 184, 166, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 10% 90%, rgba(20, 184, 166, 0.06) 1px, transparent 1px),
+    radial-gradient(circle at 30% 70%, rgba(20, 184, 166, 0.05) 1px, transparent 1px),
+    radial-gradient(circle at 70% 30%, rgba(20, 184, 166, 0.08) 1px, transparent 1px),
+    /* Patrón de regalos más grandes */
+    radial-gradient(ellipse at 25% 25%, rgba(20, 184, 166, 0.03) 2px, transparent 2px),
+    radial-gradient(ellipse at 75% 75%, rgba(20, 184, 166, 0.04) 2px, transparent 2px),
+    radial-gradient(ellipse at 50% 10%, rgba(20, 184, 166, 0.02) 2px, transparent 2px),
+    radial-gradient(ellipse at 10% 50%, rgba(20, 184, 166, 0.03) 2px, transparent 2px),
+    radial-gradient(ellipse at 90% 50%, rgba(20, 184, 166, 0.02) 2px, transparent 2px),
+    radial-gradient(ellipse at 50% 90%, rgba(20, 184, 166, 0.04) 2px, transparent 2px);
+  
+  background-size: 
+    50px 50px,
+    60px 60px,
+    45px 45px,
+    55px 55px,
+    40px 40px,
+    65px 65px,
+    48px 48px,
+    52px 52px,
+    80px 80px,
+    85px 85px,
+    70px 70px,
+    75px 75px,
+    90px 90px,
+    95px 95px;
+  
+  background-position: 
+    0 0,
+    10px 10px,
+    20px 20px,
+    30px 30px,
+    40px 40px,
+    50px 50px,
+    60px 60px,
+    70px 70px,
+    0 0,
+    20px 20px,
+    40px 40px,
+    60px 60px,
+    80px 80px,
+    100px 100px;
+  
+  animation: giftieFloat 20s ease-in-out infinite;
+}
+
+/* Animación sutil para el fondo */
+@keyframes giftieFloat {
+  0%, 100% {
+    background-position: 
+      0 0,
+      10px 10px,
+      20px 20px,
+      30px 30px,
+      40px 40px,
+      50px 50px,
+      60px 60px,
+      70px 70px,
+      0 0,
+      20px 20px,
+      40px 40px,
+      60px 60px,
+      80px 80px,
+      100px 100px;
+  }
+  50% {
+    background-position: 
+      5px 5px,
+      15px 15px,
+      25px 25px,
+      35px 35px,
+      45px 45px,
+      55px 55px,
+      65px 65px,
+      75px 75px,
+      10px 10px,
+      30px 30px,
+      50px 50px,
+      70px 70px,
+      90px 90px,
+      110px 110px;
+  }
+}
+
+/* Variante más sutil para contenido */
+.giftie-background-subtle {
+  background-color: #f8fafc;
+  background-image: 
+    radial-gradient(circle at 20% 20%, rgba(20, 184, 166, 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 80% 80%, rgba(20, 184, 166, 0.02) 1px, transparent 1px),
+    radial-gradient(circle at 40% 60%, rgba(20, 184, 166, 0.025) 1px, transparent 1px),
+    radial-gradient(circle at 60% 40%, rgba(20, 184, 166, 0.02) 1px, transparent 1px);
+  
+  background-size: 100px 100px, 120px 120px, 80px 80px, 90px 90px;
+  background-position: 0 0, 30px 30px, 60px 60px, 90px 90px;
+}
+

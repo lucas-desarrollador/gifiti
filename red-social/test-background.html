@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Fondo - Giftie</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f8fafc;
+            background-image: 
+                /* Regalos pequeños */
+                radial-gradient(circle at 15% 15%, rgba(20, 184, 166, 0.15) 2px, transparent 2px),
+                radial-gradient(circle at 85% 85%, rgba(20, 184, 166, 0.12) 2px, transparent 2px),
+                radial-gradient(circle at 35% 65%, rgba(20, 184, 166, 0.18) 2px, transparent 2px),
+                radial-gradient(circle at 65% 35%, rgba(20, 184, 166, 0.14) 2px, transparent 2px),
+                radial-gradient(circle at 95% 5%, rgba(20, 184, 166, 0.16) 2px, transparent 2px),
+                radial-gradient(circle at 5% 95%, rgba(20, 184, 166, 0.13) 2px, transparent 2px),
+                radial-gradient(circle at 25% 75%, rgba(20, 184, 166, 0.17) 2px, transparent 2px),
+                radial-gradient(circle at 75% 25%, rgba(20, 184, 166, 0.15) 2px, transparent 2px),
+                /* Regalos medianos */
+                radial-gradient(ellipse at 20% 20%, rgba(20, 184, 166, 0.08) 4px, transparent 4px),
+                radial-gradient(ellipse at 80% 80%, rgba(20, 184, 166, 0.06) 4px, transparent 4px),
+                radial-gradient(ellipse at 50% 10%, rgba(20, 184, 166, 0.07) 4px, transparent 4px),
+                radial-gradient(ellipse at 10% 50%, rgba(20, 184, 166, 0.09) 4px, transparent 4px),
+                radial-gradient(ellipse at 90% 50%, rgba(20, 184, 166, 0.05) 4px, transparent 4px),
+                radial-gradient(ellipse at 50% 90%, rgba(20, 184, 166, 0.08) 4px, transparent 4px);
+            
+            background-size: 
+                60px 60px, 70px 70px, 50px 50px, 65px 65px, 45px 45px, 75px 75px, 55px 55px, 68px 68px,
+                100px 100px, 110px 110px, 90px 90px, 120px 120px, 95px 95px, 105px 105px;
+            
+            background-position: 
+                0 0, 15px 15px, 30px 30px, 45px 45px, 60px 60px, 75px 75px, 90px 90px, 105px 105px,
+                0 0, 25px 25px, 50px 50px, 75px 75px, 100px 100px, 125px 125px;
+            
+            animation: giftieFloat 25s ease-in-out infinite;
+        }
+
+        @keyframes giftieFloat {
+            0%, 100% {
+                background-position: 
+                    0 0, 15px 15px, 30px 30px, 45px 45px, 60px 60px, 75px 75px, 90px 90px, 105px 105px,
+                    0 0, 25px 25px, 50px 50px, 75px 75px, 100px 100px, 125px 125px;
+            }
+            50% {
+                background-position: 
+                    5px 5px, 20px 20px, 35px 35px, 50px 50px, 65px 65px, 80px 80px, 95px 95px, 110px 110px,
+                    10px 10px, 35px 35px, 60px 60px, 85px 85px, 110px 110px, 135px 135px;
+            }
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 Giftie - Fondo con Regalos</h1>
+            <p>¿Puedes ver el patrón de regalos en el fondo?</p>
+        </div>
+        
+        <h2>✅ Fondo implementado:</h2>
+        <ul>
+            <li><strong>Color base:</strong> Gris claro (#f8fafc)</li>
+            <li><strong>Patrón:</strong> Regalos verde agua en diferentes tamaños</li>
+            <li><strong>Animación:</strong> Movimiento sutil de 25 segundos</li>
+            <li><strong>Opacidad:</strong> 0.05-0.18 para que sea sutil pero visible</li>
+        </ul>
+        
+        <h2>🎨 Características:</h2>
+        <ul>
+            <li>Regalos pequeños (2px) y medianos (4px)</li>
+            <li>Posiciones aleatorias para patrón natural</li>
+            <li>Animación suave que no distrae</li>
+            <li>Color verde agua de la marca</li>
+        </ul>
+        
+        <button class="button" onclick="window.location.href='http://localhost:5174'">
+            🚀 Ir a la Aplicación Principal
+        </button>
+        
+        <p style="margin-top: 30px; color: #64748b; font-size: 0.9em;">
+            Si no ves el patrón de regalos, puede ser que el navegador no esté cargando los estilos CSS correctamente.
+        </p>
+    </div>
+</body>
+</html>
+

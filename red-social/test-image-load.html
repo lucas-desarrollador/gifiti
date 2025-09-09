@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Carga de Imagen - Giftie</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f2f5;
+            background-image: url('/src/assets/background.png');
+            background-repeat: repeat;
+            background-size: 250px 250px;
+            background-position: 0 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+        
+        .image-test {
+            border: 2px solid #14b8a6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            background: white;
+        }
+        
+        .image-test img {
+            max-width: 100%;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+        }
+        
+        .error {
+            background: #fef2f2;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .success {
+            background: #f0fdf4;
+            border: 1px solid #86efac;
+            color: #16a34a;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 Test de Carga de Imagen</h1>
+            <p>Verificando que la imagen se carga correctamente</p>
+        </div>
+        
+        <div class="image-test">
+            <h3>📁 Imagen de fondo:</h3>
+            <p><strong>Ruta:</strong> /src/assets/background.png</p>
+            <p><strong>Tamaño:</strong> 250px x 250px</p>
+            <p><strong>Modo:</strong> repeat (mosaico)</p>
+        </div>
+        
+        <div class="image-test">
+            <h3>🖼️ Vista previa de la imagen:</h3>
+            <img src="/src/assets/background.png" alt="Imagen de fondo" onerror="this.style.display='none'; document.getElementById('error').style.display='block';" />
+            <div id="error" class="error" style="display: none;">
+                ❌ Error: No se pudo cargar la imagen. Verifica que el archivo existe en la ruta correcta.
+            </div>
+        </div>
+        
+        <div class="success">
+            ✅ Si puedes ver el fondo con regalitos arriba, la imagen se está cargando correctamente.
+        </div>
+        
+        <h2>🔧 Posibles soluciones si no funciona:</h2>
+        <ul>
+            <li>Verificar que el archivo existe en <code>src/assets/background.png</code></li>
+            <li>Reiniciar el servidor de desarrollo</li>
+            <li>Limpiar la caché del navegador (Ctrl+F5)</li>
+            <li>Verificar que el archivo no esté corrupto</li>
+        </ul>
+        
+        <button class="button" onclick="window.location.href='http://localhost:5174'">
+            🚀 Ir a la Aplicación Principal
+        </button>
+        
+        <p style="margin-top: 30px; color: #64748b; font-size: 0.9em;">
+            Si la imagen no se carga, puede ser un problema de ruta o de caché del navegador.
+        </p>
+    </div>
+</body>
+</html>

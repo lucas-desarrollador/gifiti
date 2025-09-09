@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Imagen de Fondo - Giftie</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f2f5;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .upload-area {
+            border: 2px dashed #14b8a6;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f0fdfa;
+        }
+        
+        .upload-area:hover {
+            background: #ecfdf5;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(20, 184, 166, 0.3);
+        }
+        
+        .instructions {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎁 Subir Imagen de Fondo</h1>
+            <p>Para usar tu imagen exacta como fondo</p>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Instrucciones:</h3>
+            <ol>
+                <li>Guarda la imagen que me pasaste en la carpeta <code>src/assets/</code></li>
+                <li>Nómbrala <code>gift-background.png</code> o <code>gift-background.jpg</code></li>
+                <li>Luego te ayudo a implementarla como fondo mosaico</li>
+            </ol>
+        </div>
+        
+        <div class="upload-area">
+            <h3>📁 Ubicación del archivo:</h3>
+            <p><strong>F:\APP.KLANSTART\APP.WEB\red-social\src\assets\gift-background.png</strong></p>
+            <p>O</p>
+            <p><strong>F:\APP.KLANSTART\APP.WEB\red-social\src\assets\gift-background.jpg</strong></p>
+        </div>
+        
+        <h2>🎨 Lo que haremos:</h2>
+        <ul>
+            <li>Usar tu imagen exacta como patrón de fondo</li>
+            <li>Repetirla en modo mosaico para cubrir toda la pantalla</li>
+            <li>Mantener la imagen original sin modificaciones</li>
+            <li>Ajustar el tamaño para que se vea bien</li>
+        </ul>
+        
+        <button class="button" onclick="window.location.href='http://localhost:5174'">
+            🚀 Ir a la Aplicación Principal
+        </button>
+        
+        <p style="margin-top: 30px; color: #64748b; font-size: 0.9em;">
+            Una vez que subas la imagen, te ayudo a implementarla como fondo mosaico.
+        </p>
+    </div>
+</body>
+</html>

@@ -1,0 +1,17 @@
+<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Regalito con contorno como en tu imagen -->
+  <g transform="translate(15, 15)">
+    <!-- Caja del regalo -->
+    <rect x="0" y="8" width="30" height="20" fill="none" stroke="#aed6c7" stroke-width="1.5" opacity="0.4"/>
+    
+    <!-- Lazo superior -->
+    <rect x="12" y="0" width="6" height="16" fill="none" stroke="#aed6c7" stroke-width="1.5" opacity="0.4"/>
+    
+    <!-- Lazo horizontal -->
+    <rect x="0" y="16" width="30" height="4" fill="none" stroke="#aed6c7" stroke-width="1.5" opacity="0.4"/>
+    
+    <!-- Detalles del lazo -->
+    <circle cx="15" cy="8" r="2" fill="none" stroke="#aed6c7" stroke-width="1" opacity="0.3"/>
+    <circle cx="15" cy="24" r="2" fill="none" stroke="#aed6c7" stroke-width="1" opacity="0.3"/>
+  </g>
+</svg>
