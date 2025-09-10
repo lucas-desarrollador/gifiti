@@ -11,6 +11,7 @@ import authRoutes from './routes/authRoutes';
 import userRoutes from './routes/userRoutes';
 import wishRoutes from './routes/wishRoutes';
 import contactRoutes from './routes/contactRoutes';
+import googleAuthRoutes from './routes/googleAuthRoutes';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -42,6 +43,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/wishes', wishRoutes);
 app.use('/api/contacts', contactRoutes);
+app.use('/api/auth/google', googleAuthRoutes);
 
 // Ruta de salud
 app.get('/api/health', (req: any, res: any) => {

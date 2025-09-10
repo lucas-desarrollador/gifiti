@@ -12,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import WishesPage from './pages/WishesPage';
 import ContactsPage from './pages/ContactsPage';
 import ExplorePage from './pages/ExplorePage';
+import GoogleAuthCallback from './pages/GoogleAuthCallback';
 import { ROUTES } from './constants';
 import { theme } from './theme';
 
@@ -27,6 +28,7 @@ function App() {
                 {/* Rutas públicas */}
                 <Route path={ROUTES.LOGIN} element={<LoginPage />} />
                 <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+                <Route path="/auth/google/callback" element={<GoogleAuthCallback />} />
                 
                 {/* Rutas protegidas */}
                 <Route

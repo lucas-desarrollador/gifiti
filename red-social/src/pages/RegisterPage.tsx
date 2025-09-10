@@ -13,8 +13,10 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useNavigate, Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { RegisterForm } from '../types';
+import GoogleAuthButton from '../components/GoogleAuthButton';
+import { GoogleAuthResponse, GoogleUser } from '../services/googleAuthService';
 
 const schema = yup.object({
   email: yup
@@ -47,16 +49,39 @@ const schema = yup.object({
 const RegisterPage: React.FC = () => {
   const { register: registerUser } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [googleUserData, setGoogleUserData] = useState<GoogleUser | null>(null);
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    setValue,
   } = useForm<RegisterForm>({
     resolver: yupResolver(schema),
   });
+
+  // Cargar datos de Google si viene del login
+  React.useEffect(() => {
+    const isGoogleAuth = searchParams.get('google') === 'true';
+    if (isGoogleAuth) {
+      const savedGoogleData = localStorage.getItem('googleUserData');
+      if (savedGoogleData) {
+        const userData: GoogleUser = JSON.parse(savedGoogleData);
+        setGoogleUserData(userData);
+        
+        // Pre-llenar formulario con datos de Google
+        setValue('email', userData.email);
+        setValue('realName', userData.name);
+        setValue('nickname', userData.given_name || userData.name.split(' ')[0]);
+        
+        // Limpiar datos guardados
+        localStorage.removeItem('googleUserData');
+      }
+    }
+  }, [searchParams, setValue]);
 
   const onSubmit = async (data: RegisterForm) => {
     try {
@@ -66,6 +91,40 @@ const RegisterPage: React.FC = () => {
       navigate('/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrarse');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = async (response: any) => {
+    try {
+      setIsLoading(true);
+      setError('');
+      
+      if (!response.success) {
+        setError(response.error || 'Error al autenticar con Google');
+        return;
+      }
+
+      if (!response.user) {
+        setError('No se pudo obtener información del usuario');
+        return;
+      }
+
+      // Crear usuario con datos de Google
+      const userData = {
+        email: response.user.email,
+        password: 'google_auth', // Password especial para usuarios de Google
+        nickname: response.user.given_name || response.user.name.split(' ')[0],
+        realName: response.user.name,
+        birthDate: '1990-01-01' // Fecha por defecto, el usuario puede cambiarla después
+      };
+
+      await registerUser(userData);
+      navigate('/profile');
+      
+    } catch (err) {
+      setError('Error al registrarse con Google. Por favor, usa el formulario normal.');
     } finally {
       setIsLoading(false);
     }
@@ -178,8 +237,39 @@ const RegisterPage: React.FC = () => {
             >
               {isLoading ? 'Registrando...' : 'Registrarse'}
             </Button>
+
+            {/* Separador */}
+            <Box sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              my: 2,
+              '&::before, &::after': {
+                content: '""',
+                flex: 1,
+                height: '1px',
+                backgroundColor: 'rgba(0, 0, 0, 0.12)',
+              },
+            }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  px: 2, 
+                  color: 'text.secondary',
+                  backgroundColor: 'white',
+                }}
+              >
+                o
+              </Typography>
+            </Box>
+
+            {/* Botón de Google */}
+            <GoogleAuthButton 
+              onGoogleAuth={handleGoogleAuth}
+              isLoading={isLoading}
+              variant="register"
+            />
             
-            <Box textAlign="center">
+            <Box textAlign="center" sx={{ mt: 2 }}>
               <Link component={RouterLink} to="/login" variant="body2">
                 ¿Ya tienes cuenta? Inicia sesión aquí
               </Link>

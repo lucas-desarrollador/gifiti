@@ -14,6 +14,7 @@ import {
   useTheme,
   useMediaQuery,
 } from '@mui/material';
+import { CardGiftcard } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
@@ -21,6 +22,8 @@ import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { LoginForm } from '../types';
 import { APP_NAME } from '../constants';
+import GoogleAuthButton from '../components/GoogleAuthButton';
+import { GoogleAuthResponse } from '../services/googleAuthService';
 
 const schema = yup.object({
   email: yup
@@ -62,13 +65,64 @@ const LoginPage: React.FC = () => {
     }
   };
 
+  const handleGoogleAuth = async (response: any) => {
+    try {
+      setIsLoading(true);
+      setError('');
+      
+      if (!response.success) {
+        setError(response.error || 'Error al autenticar con Google');
+        return;
+      }
+
+      if (!response.user) {
+        setError('No se pudo obtener información del usuario');
+        return;
+      }
+
+      // Verificar si el usuario ya existe
+      const userExists = await checkUserExists(response.user.email);
+      
+      if (!userExists) {
+        // Usuario nuevo - ir a registro con datos de Google
+        localStorage.setItem('googleUserData', JSON.stringify(response.user));
+        navigate('/register?google=true');
+        return;
+      }
+
+      // Usuario existente - hacer login
+      const loginData = {
+        email: response.user.email,
+        password: 'google_auth'
+      };
+
+      await login(loginData);
+      navigate('/profile');
+      
+    } catch (err) {
+      setError('Error al autenticar con Google. Por favor, usa el formulario normal.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const checkUserExists = async (email: string): Promise<boolean> => {
+    try {
+      const response = await fetch(`http://localhost:3001/api/users/check?email=${encodeURIComponent(email)}`);
+      const data = await response.json();
+      return data.exists;
+    } catch (error) {
+      console.error('Error al verificar usuario:', error);
+      return false;
+    }
+  };
+
   return (
     <Box
       sx={{
         minHeight: '100vh',
         display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
+        flexDirection: 'column',
         position: 'relative',
         overflow: 'hidden',
       }}
@@ -90,7 +144,56 @@ const LoginPage: React.FC = () => {
         }}
       />
 
-      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+      {/* Contenido principal con header integrado */}
+      <Box sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+        <Container maxWidth="lg" sx={{ width: '100%' }}>
+          {/* Header con logo y nombre centrado */}
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              mb: { xs: 2, sm: 3 },
+            }}
+          >
+            <Fade in timeout={800}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: { xs: 1, sm: 2 },
+                  backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                  backdropFilter: 'blur(10px)',
+                  borderRadius: 3,
+                  px: { xs: 2, sm: 4 },
+                  py: { xs: 1, sm: 2 },
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                  border: '1px solid rgba(255, 255, 255, 0.2)',
+                }}
+              >
+                <CardGiftcard 
+                  sx={{ 
+                    fontSize: { xs: 28, sm: 36 }, 
+                    color: theme.palette.primary.main,
+                    filter: 'drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1))',
+                  }} 
+                />
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontWeight: 800,
+                    color: theme.palette.primary.main,
+                    letterSpacing: '-0.02em',
+                    fontSize: { xs: '1.6rem', sm: '2rem' },
+                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  {APP_NAME}
+                </Typography>
+              </Box>
+            </Fade>
+          </Box>
+
         <Grid container spacing={4} alignItems="center" justifyContent="center">
           {/* Robot mascota - Lado izquierdo */}
           <Grid item xs={12} md={6}>
@@ -308,6 +411,37 @@ const LoginPage: React.FC = () => {
                     >
                       {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
                     </Button>
+
+                    {/* Separador */}
+                    <Box sx={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      my: 2,
+                      '&::before, &::after': {
+                        content: '""',
+                        flex: 1,
+                        height: '1px',
+                        backgroundColor: theme.palette.divider,
+                      },
+                    }}>
+                      <Typography 
+                        variant="body2" 
+                        sx={{ 
+                          px: 2, 
+                          color: theme.palette.text.secondary,
+                          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        }}
+                      >
+                        o
+                      </Typography>
+                    </Box>
+
+                    {/* Botón de Google */}
+                    <GoogleAuthButton 
+                      onGoogleAuth={handleGoogleAuth}
+                      isLoading={isLoading}
+                      variant="login"
+                    />
                     
                     <Box textAlign="center" sx={{ mt: 2 }}>
                       <Link
@@ -332,7 +466,8 @@ const LoginPage: React.FC = () => {
             </Box>
           </Grid>
         </Grid>
-      </Container>
+        </Container>
+      </Box>
     </Box>
   );
 };

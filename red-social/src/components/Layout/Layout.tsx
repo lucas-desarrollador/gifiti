@@ -5,6 +5,7 @@ import { useAuth } from '../../context/AuthContext';
 import { APP_NAME } from '../../constants';
 import NavigationTabs from './NavigationTabs';
 import UserMenu from './UserMenu';
+import Footer from './Footer';
 import { colors } from '../../theme';
 
 interface LayoutProps {
@@ -15,12 +16,24 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { state } = useAuth();
 
   if (!state.isAuthenticated) {
-    return <>{children}</>;
+    return (
+      <Box sx={{ 
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh'
+      }}>
+        <Box sx={{ flexGrow: 1 }}>
+          {children}
+        </Box>
+        <Footer />
+      </Box>
+    );
   }
 
   return (
     <Box sx={{ 
-      flexGrow: 1, 
+      display: 'flex',
+      flexDirection: 'column',
       minHeight: '100vh'
     }}>
       {/* Header profesional con gradiente */}
@@ -81,9 +94,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <NavigationTabs />
 
       {/* Main Content */}
-      <Container maxWidth="lg" sx={{ mt: 3, mb: 3 }}>
-        {children}
-      </Container>
+      <Box sx={{ flexGrow: 1 }}>
+        <Container maxWidth="lg" sx={{ mt: 3, mb: 3 }}>
+          {children}
+        </Container>
+      </Box>
+
+      {/* Footer */}
+      <Footer />
     </Box>
   );
 };

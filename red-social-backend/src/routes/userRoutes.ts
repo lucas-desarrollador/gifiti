@@ -4,13 +4,17 @@ import {
   updateProfile, 
   getUserById, 
   searchUsers,
-  uploadProfileImage 
+  uploadProfileImage,
+  checkUserExists
 } from '../controllers/userController';
 import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
-// Todas las rutas requieren autenticación
+// Ruta pública para verificar si un usuario existe (para Google OAuth)
+router.get('/check', checkUserExists);
+
+// Todas las demás rutas requieren autenticación
 router.use(authenticateToken);
 
 // Rutas de perfil

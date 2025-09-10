@@ -36,6 +36,36 @@ const upload = multer({
 
 export const uploadProfileImage = upload.single('profileImage');
 
+// Verificar si un usuario existe por email
+export const checkUserExists = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.query;
+
+    if (!email) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Email requerido' 
+      });
+    }
+
+    const user = await User.findOne({ 
+      where: { email: email as string } 
+    });
+
+    res.json({ 
+      success: true, 
+      exists: !!user 
+    });
+
+  } catch (error) {
+    console.error('Error al verificar usuario:', error);
+    res.status(500).json({ 
+      success: false, 
+      error: 'Error interno del servidor' 
+    });
+  }
+};
+
 export const getProfile = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
