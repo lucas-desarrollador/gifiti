@@ -124,7 +124,7 @@ export const updateProfile = async (req: Request, res: Response) => {
 
     // Manejar imagen de perfil si se subió
     if (req.file) {
-      updateData.profileImage = `/uploads/profiles/${req.file.filename}`;
+      updateData.profileImage = req.file.filename;
     }
 
     await user.update(updateData);
@@ -228,3 +228,24 @@ export const searchUsers = async (req: Request, res: Response) => {
     });
   }
 };
+
+export const getUserCount = async (req: Request, res: Response) => {
+  try {
+    const userCount = await User.count();
+    
+    res.json({ 
+      success: true,
+      data: {
+        count: userCount,
+        timestamp: new Date().toISOString()
+      }
+    });
+  } catch (error) {
+    console.error('Error al obtener contador de usuarios:', error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Error interno del servidor' 
+    });
+  }
+};
+

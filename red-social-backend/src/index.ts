@@ -12,6 +12,9 @@ import userRoutes from './routes/userRoutes';
 import wishRoutes from './routes/wishRoutes';
 import contactRoutes from './routes/contactRoutes';
 import googleAuthRoutes from './routes/googleAuthRoutes';
+import contactNotificationRoutes from './routes/contactNotificationRoutes';
+import birthdayNotificationRoutes from './routes/birthdayNotificationRoutes';
+import contactProfileRoutes from './routes/contactProfileRoutes';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -44,6 +47,9 @@ app.use('/api/users', userRoutes);
 app.use('/api/wishes', wishRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/auth/google', googleAuthRoutes);
+app.use('/api/contact-notifications', contactNotificationRoutes);
+app.use('/api/birthday-notifications', birthdayNotificationRoutes);
+app.use('/api/contact-profile', contactProfileRoutes);
 
 // Ruta de salud
 app.get('/api/health', (req: any, res: any) => {
@@ -51,6 +57,23 @@ app.get('/api/health', (req: any, res: any) => {
     success: true,
     message: 'Servidor funcionando correctamente',
     timestamp: new Date().toISOString()
+  });
+});
+
+// Ruta de prueba para verificar archivos estáticos
+app.get('/api/test-image', (req: any, res: any) => {
+  const fs = require('fs');
+  const path = require('path');
+  
+  const uploadsDir = path.join(process.cwd(), 'uploads', 'wishes');
+  const files = fs.readdirSync(uploadsDir);
+  
+  res.json({
+    success: true,
+    message: 'Archivos en uploads/wishes',
+    files: files.slice(0, 5), // Solo los primeros 5
+    uploadsPath: uploadsDir,
+    currentDir: process.cwd()
   });
 });
 

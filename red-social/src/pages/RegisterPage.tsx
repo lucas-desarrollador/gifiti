@@ -88,7 +88,7 @@ const RegisterPage: React.FC = () => {
       setIsLoading(true);
       setError('');
       await registerUser(data);
-      navigate('/profile');
+      navigate('/explore');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al registrarse');
     } finally {
@@ -121,7 +121,7 @@ const RegisterPage: React.FC = () => {
       };
 
       await registerUser(userData);
-      navigate('/profile');
+      navigate('/explore');
       
     } catch (err) {
       setError('Error al registrarse con Google. Por favor, usa el formulario normal.');

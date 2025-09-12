@@ -29,12 +29,16 @@ import {
   Check,
   Close,
   Cake,
+  Visibility as ViewIcon,
 } from '@mui/icons-material';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { ContactService } from '../services/contactService';
 import { Contact, User } from '../types';
 import { colors } from '../theme';
+import ContactProfileModal from '../components/Contacts/ContactProfileModal';
+import ContactWishesModal from '../components/Contacts/ContactWishesModal';
+import { getProfileImageUrl } from '../utils/imageUtils';
 
 const ContactsPage: React.FC = () => {
   const { state } = useAuth();
@@ -44,10 +48,31 @@ const ContactsPage: React.FC = () => {
   const [searchResults, setSearchResults] = useState<User[]>([]);
   const [error, setError] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Estados para los modales
+  const [selectedContactId, setSelectedContactId] = useState<string>('');
+  const [selectedContactName, setSelectedContactName] = useState<string>('');
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isWishesModalOpen, setIsWishesModalOpen] = useState(false);
 
   // Cargar contactos al montar el componente
   useEffect(() => {
     loadContacts();
+  }, []);
+
+  // Escuchar cuando se recargan los contactos desde otros componentes
+  useEffect(() => {
+    // Crear un listener para el evento personalizado
+    const handleReloadContacts = () => {
+      loadContacts();
+    };
+
+    // Escuchar el evento personalizado
+    window.addEventListener('reloadContacts', handleReloadContacts);
+
+    return () => {
+      window.removeEventListener('reloadContacts', handleReloadContacts);
+    };
   }, []);
 
   const loadContacts = async () => {
@@ -138,6 +163,28 @@ const ContactsPage: React.FC = () => {
     }
   };
 
+  // Funciones para manejar los modales
+  const handleContactProfileClick = (contactId: string, contactName: string) => {
+    setSelectedContactId(contactId);
+    setSelectedContactName(contactName);
+    setIsProfileModalOpen(true);
+  };
+
+  const handleViewWishes = (contactId: string) => {
+    setSelectedContactId(contactId);
+    setIsWishesModalOpen(true);
+  };
+
+  const handleViewContacts = (contactId: string) => {
+    // TODO: Implementar vista de contactos del usuario
+    console.log('Ver contactos de:', contactId);
+  };
+
+  const handleViewMutualFriends = (contactId: string) => {
+    // TODO: Implementar vista de amigos en común
+    console.log('Ver amigos en común con:', contactId);
+  };
+
   if (!state.user) {
     return (
       <Container>
@@ -206,43 +253,38 @@ const ContactsPage: React.FC = () => {
               .filter(contact => contact.status === 'accepted')
               .map((contact) => (
                 <Grid item xs={12} sm={6} md={4} key={contact.id}>
-                  <Card>
-                    <CardContent>
-                      <Box display="flex" alignItems="center" mb={2}>
-                        <Avatar
-                          src={contact.contact.profileImage}
-                          sx={{ width: 60, height: 60, mr: 2 }}
-                        >
-                          {contact.contact.nickname.charAt(0).toUpperCase()}
-                        </Avatar>
-                        <Box>
-                          <Typography variant="h6">
-                            {contact.contact.nickname}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            {contact.contact.realName}
-                          </Typography>
-                        </Box>
-                      </Box>
-                      
-                      <Box display="flex" alignItems="center" gap={1} mb={1}>
-                        <Cake fontSize="small" color="primary" />
-                        <Typography variant="body2">
-                          {formatBirthdayInfo(contact.contact.birthDate)}
-                        </Typography>
-                      </Box>
-                      
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        fullWidth
-                        onClick={() => {
-                          // TODO: Navegar a perfil del contacto
-                          console.log('Ver perfil de', contact.contact.nickname);
+                  <Card
+                    sx={{
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: `0 8px 25px ${colors.shadow.medium}`,
+                      },
+                    }}
+                    onClick={() => handleContactProfileClick(contact.contact.id, contact.contact.nickname)}
+                  >
+                    <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                      <Avatar
+                        src={getProfileImageUrl(contact.contact.profileImage)}
+                        sx={{ 
+                          width: 80, 
+                          height: 80, 
+                          mx: 'auto',
+                          mb: 2,
+                          border: `3px solid ${colors.primary[200]}`,
+                          boxShadow: `0 4px 15px ${colors.primary[100]}`,
                         }}
                       >
-                        Ver Deseos
-                      </Button>
+                        {contact.contact.nickname.charAt(0).toUpperCase()}
+                      </Avatar>
+                      
+                      <Typography variant="h6" sx={{ color: colors.text.primary, fontWeight: 600, mb: 0.5 }}>
+                        {contact.contact.nickname}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: colors.text.secondary }}>
+                        {contact.contact.realName}
+                      </Typography>
                     </CardContent>
                   </Card>
                 </Grid>
@@ -313,6 +355,24 @@ const ContactsPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Modal de perfil de contacto */}
+      <ContactProfileModal
+        open={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        contactId={selectedContactId}
+        onViewWishes={handleViewWishes}
+        onViewContacts={handleViewContacts}
+        onViewMutualFriends={handleViewMutualFriends}
+      />
+
+      {/* Modal de deseos del contacto */}
+      <ContactWishesModal
+        open={isWishesModalOpen}
+        onClose={() => setIsWishesModalOpen(false)}
+        contactId={selectedContactId}
+        contactName={selectedContactName}
+      />
     </Container>
   );
 };

@@ -1,162 +1,145 @@
 import React, { useState } from 'react';
 import {
   Container,
-  Paper,
   Typography,
   Box,
-  Tabs,
-  Tab,
-  Grid,
-  Card,
-  CardMedia,
-  CardContent,
-  Button,
-  Avatar,
-  Chip,
+  IconButton
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { EXPLORE_TYPES } from '../constants';
+import { Settings } from '@mui/icons-material';
+import { colors } from '../theme';
 
 const ExplorePage: React.FC = () => {
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState(0);
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
-
-  const handleExploreUsers = () => {
-    navigate('/explore/users');
-  };
-
-  const handleExploreWishes = () => {
-    navigate('/explore/wishes');
-  };
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
 
   return (
-    <Container maxWidth="lg">
-      <Paper elevation={3} sx={{ padding: 4, mt: 3 }}>
-        <Typography variant="h4" gutterBottom>
-          Explorar
-        </Typography>
+    <Container maxWidth="lg" sx={{ py: 3 }}>
+      {/* Header con botón de preferencias */}
+      <Box sx={{ 
+        display: 'flex', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        mb: 3
+      }}>
+        <Box>
+          <Typography variant="h4" gutterBottom sx={{ color: colors.text.primary }}>
+            Explorar
+          </Typography>
+          <Typography variant="body1" sx={{ color: colors.text.secondary }}>
+            Descubre nuevos usuarios y deseos interesantes
+          </Typography>
+        </Box>
         
-        <Typography variant="body1" color="text.secondary" paragraph>
-          Descubre nuevos usuarios y deseos interesantes
-        </Typography>
-
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-          <Tabs value={activeTab} onChange={handleTabChange}>
-            <Tab label="Usuarios" />
-            <Tab label="Deseos" />
-          </Tabs>
+        <IconButton
+          onClick={() => setPreferencesOpen(true)}
+          sx={{
+            backgroundColor: colors.primary[50],
+            color: colors.primary[600],
+            '&:hover': {
+              backgroundColor: colors.primary[100],
+            }
+          }}
+        >
+          <Settings />
+        </IconButton>
+      </Box>
+        
+        <Box sx={{ 
+          backgroundColor: '#f5f5f5', 
+          p: 3, 
+          borderRadius: 2,
+          textAlign: 'center'
+        }}>
+          <Typography variant="h6" gutterBottom>
+            🎁 Página de Explorar
+          </Typography>
+          <Typography variant="body2">
+            Esta página está funcionando correctamente. 
+            Aquí se mostrarán los deseos de otros usuarios.
+          </Typography>
         </Box>
 
-        {activeTab === 0 && (
-          <Box>
+      {/* Diálogo de preferencias simple */}
+      {preferencesOpen && (
+        <Box sx={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000
+        }}>
+          <Box sx={{
+            backgroundColor: 'white',
+            borderRadius: 2,
+            p: 3,
+            maxWidth: 400,
+            width: '90%'
+          }}>
             <Typography variant="h6" gutterBottom>
-              Explorar Usuarios
+              Preferencias de Exploración
             </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Descubre usuarios cercanos y de todo el mundo
+            <Typography variant="body2" paragraph>
+              ¿Qué te gustaría explorar?
             </Typography>
             
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Usuarios Cercanos
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      Encuentra personas cerca de tu ubicación
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      onClick={handleExploreUsers}
-                      fullWidth
-                    >
-                      Explorar Usuarios
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Usuarios Aleatorios
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      Conoce personas de todo el mundo
-                    </Typography>
-                    <Button
-                      variant="outlined"
-                      onClick={handleExploreUsers}
-                      fullWidth
-                    >
-                      Ver Aleatorios
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </Box>
-        )}
-
-        {activeTab === 1 && (
-          <Box>
-            <Typography variant="h6" gutterBottom>
-              Explorar Deseos
-            </Typography>
-            <Typography variant="body2" color="text.secondary" paragraph>
-              Descubre deseos interesantes de otros usuarios
-            </Typography>
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                🎁 Deseos - Ver deseos de otros usuarios
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2 }}>
+                👥 Usuarios - Conocer nuevos usuarios
+              </Typography>
+            </Box>
             
-            <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Deseos Populares
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      Los deseos más populares entre los usuarios
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      onClick={handleExploreWishes}
-                      fullWidth
-                    >
-                      Ver Deseos Populares
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-              
-              <Grid item xs={12} md={6}>
-                <Card sx={{ height: '100%' }}>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Deseos Recientes
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" paragraph>
-                      Los deseos más recientes agregados
-                    </Typography>
-                    <Button
-                      variant="outlined"
-                      onClick={handleExploreWishes}
-                      fullWidth
-                    >
-                      Ver Deseos Recientes
-                    </Button>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Box sx={{ 
+                flex: 1, 
+                p: 2, 
+                border: '2px solid #e0e0e0', 
+                borderRadius: 1,
+                textAlign: 'center',
+                cursor: 'pointer',
+                '&:hover': { backgroundColor: '#f5f5f5' }
+              }}
+              onClick={() => setPreferencesOpen(false)}
+              >
+                <Typography variant="body2">🎁 Deseos</Typography>
+              </Box>
+              <Box sx={{ 
+                flex: 1, 
+                p: 2, 
+                border: '2px solid #e0e0e0', 
+                borderRadius: 1,
+                textAlign: 'center',
+                cursor: 'pointer',
+                '&:hover': { backgroundColor: '#f5f5f5' }
+              }}
+              onClick={() => setPreferencesOpen(false)}
+              >
+                <Typography variant="body2">👥 Usuarios</Typography>
+              </Box>
+            </Box>
+            
+            <Box sx={{ mt: 2, textAlign: 'center' }}>
+              <Typography 
+                variant="body2" 
+                sx={{ 
+                  cursor: 'pointer', 
+                  color: colors.text.secondary,
+                  '&:hover': { color: colors.text.primary }
+                }}
+                onClick={() => setPreferencesOpen(false)}
+              >
+                Cancelar
+              </Typography>
+            </Box>
           </Box>
-        )}
-      </Paper>
+        </Box>
+      )}
     </Container>
   );
 };

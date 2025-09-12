@@ -6,6 +6,8 @@ import { APP_NAME } from '../../constants';
 import NavigationTabs from './NavigationTabs';
 import UserMenu from './UserMenu';
 import Footer from './Footer';
+import UserCounter from './UserCounter';
+import BirthdayNotificationsBell from './BirthdayNotificationsBell';
 import { colors } from '../../theme';
 
 interface LayoutProps {
@@ -72,19 +74,19 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Typography>
           </Box>
 
+          {/* Contador de usuarios */}
+          <Box sx={{ 
+            display: { xs: 'none', md: 'flex' },
+            alignItems: 'center',
+            mr: 3
+          }}>
+            <UserCounter />
+          </Box>
+
           {/* Notificaciones y menú de usuario */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <IconButton 
-              sx={{ 
-                color: 'white',
-                backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                }
-              }}
-            >
-              <Notifications />
-            </IconButton>
+            {/* Campanita de cumpleaños */}
+            <BirthdayNotificationsBell />
             <UserMenu />
           </Box>
         </Toolbar>

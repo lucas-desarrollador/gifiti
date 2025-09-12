@@ -2,11 +2,16 @@ import sequelize from '../config/database';
 import User from './User';
 import Wish from './Wish';
 import Contact from './Contact';
+import { ReputationVote } from './ReputationVote';
 
 // Definir todas las relaciones
 User.hasMany(Wish, { foreignKey: 'userId', as: 'wishes' });
 User.hasMany(Contact, { foreignKey: 'userId', as: 'contacts' });
 User.hasMany(Contact, { foreignKey: 'contactId', as: 'contactRequests' });
+
+// Relaciones para votos de reputación
+User.hasMany(ReputationVote, { foreignKey: 'fromUserId', as: 'votesGiven' });
+User.hasMany(ReputationVote, { foreignKey: 'toUserId', as: 'votesReceived' });
 
 // Sincronizar la base de datos
 const syncDatabase = async () => {
@@ -28,5 +33,6 @@ export {
   User,
   Wish,
   Contact,
+  ReputationVote,
   syncDatabase,
 };

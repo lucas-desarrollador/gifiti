@@ -230,7 +230,7 @@ export const ComplaintsDialog: React.FC<{ open: boolean; onClose: () => void }> 
             <Typography variant="body1" paragraph sx={{ color: colors.text.secondary }}>
               Si tiene alguna queja, reclamo o sugerencia sobre nuestros servicios, 
               por favor complete el siguiente formulario. Nos comprometemos a responder 
-              a todas las consultas en un plazo máximo de 48 horas.
+              a todas las consultas en un plazo máximo de 72 horas.
             </Typography>
             
             <TextField

@@ -184,6 +184,7 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     dispatch({ type: 'REMOVE_CONTACT', payload: contactId });
   };
 
+
   // Funciones para notifications
   const setNotifications = (notifications: Notification[]) => {
     dispatch({ type: 'SET_NOTIFICATIONS', payload: notifications });

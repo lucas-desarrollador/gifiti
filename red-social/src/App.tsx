@@ -67,11 +67,11 @@ function App() {
                 {/* Ruta por defecto */}
                 <Route
                   path={ROUTES.HOME}
-                  element={<Navigate to={ROUTES.PROFILE} replace />}
+                  element={<Navigate to={ROUTES.EXPLORE} replace />}
                 />
                 
                 {/* Ruta 404 */}
-                <Route path="*" element={<Navigate to={ROUTES.PROFILE} replace />} />
+                <Route path="*" element={<Navigate to={ROUTES.EXPLORE} replace />} />
               </Routes>
             </Layout>
           </Router>

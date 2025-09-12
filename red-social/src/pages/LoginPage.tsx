@@ -57,7 +57,7 @@ const LoginPage: React.FC = () => {
       setIsLoading(true);
       setError('');
       await login(data);
-      navigate('/profile');
+      navigate('/explore');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {

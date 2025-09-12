@@ -13,14 +13,21 @@ import {
   Settings,
   Logout,
   Notifications,
+  PersonAdd,
 } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import NotificationsPanel from './NotificationsPanel';
+import ContactNotificationsPanel from './ContactNotificationsPanel';
+import SettingsDialog from './SettingsDialog';
 
 const UserMenu: React.FC = () => {
   const { state, logout } = useAuth();
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [contactNotificationsOpen, setContactNotificationsOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const open = Boolean(anchorEl);
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -47,14 +54,17 @@ const UserMenu: React.FC = () => {
   };
 
   const handleSettings = () => {
-    // TODO: Implementar página de configuración
-    console.log('Ir a configuración');
+    setSettingsOpen(true);
     handleClose();
   };
 
   const handleNotifications = () => {
-    // TODO: Implementar página de notificaciones
-    console.log('Ver notificaciones');
+    setNotificationsOpen(true);
+    handleClose();
+  };
+
+  const handleContactNotifications = () => {
+    setContactNotificationsOpen(true);
     handleClose();
   };
 
@@ -137,6 +147,13 @@ const UserMenu: React.FC = () => {
           Notificaciones
         </MenuItem>
         
+        <MenuItem onClick={handleContactNotifications}>
+          <ListItemIcon>
+            <PersonAdd fontSize="small" />
+          </ListItemIcon>
+          Invitaciones de Contacto
+        </MenuItem>
+        
         <MenuItem onClick={handleSettings}>
           <ListItemIcon>
             <Settings fontSize="small" />
@@ -153,6 +170,24 @@ const UserMenu: React.FC = () => {
           Cerrar Sesión
         </MenuItem>
       </Menu>
+
+      {/* Notifications Panel */}
+      <NotificationsPanel
+        open={notificationsOpen}
+        onClose={() => setNotificationsOpen(false)}
+      />
+
+      {/* Contact Notifications Panel */}
+      <ContactNotificationsPanel
+        open={contactNotificationsOpen}
+        onClose={() => setContactNotificationsOpen(false)}
+      />
+
+      {/* Settings Dialog */}
+      <SettingsDialog
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+      />
     </>
   );
 };

@@ -19,6 +19,8 @@ import { useAuth } from '../context/AuthContext';
 import { UserService } from '../services/userService';
 import { ProfileForm, User } from '../types';
 import { colors } from '../theme';
+import ReputationIcons from '../components/ReputationIcons';
+import { getProfileImageUrl } from '../utils/imageUtils';
 
 const schema = yup.object({
   nickname: yup
@@ -170,19 +172,70 @@ const ProfilePage: React.FC = () => {
             {/* Foto de perfil */}
             <Grid item xs={12} md={4}>
               <Box display="flex" flexDirection="column" alignItems="center">
-                <Avatar
-                  src={previewImage}
-                  sx={{ 
-                    width: { xs: 120, sm: 150 }, 
-                    height: { xs: 120, sm: 150 }, 
-                    mb: 2,
-                    border: `3px solid ${colors.primary[200]}`,
-                    boxShadow: '0 4px 12px rgba(20, 184, 166, 0.15)',
-                    fontSize: { xs: '2rem', sm: '2.5rem' }
-                  }}
-                >
-                  {state.user.nickname.charAt(0).toUpperCase()}
-                </Avatar>
+                <Box sx={{ position: 'relative', mb: 2 }}>
+                  <Avatar
+                    src={previewImage || getProfileImageUrl(state.user.profileImage)}
+                    sx={{ 
+                      width: { xs: 120, sm: 150 }, 
+                      height: { xs: 120, sm: 150 }, 
+                      border: `3px solid ${colors.primary[200]}`,
+                      boxShadow: '0 4px 12px rgba(20, 184, 166, 0.15)',
+                      fontSize: { xs: '2rem', sm: '2.5rem' }
+                    }}
+                  >
+                    {state.user.nickname.charAt(0).toUpperCase()}
+                  </Avatar>
+                  
+                  {/* Iconos de reputación */}
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: -5,
+                      left: -5,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      backgroundColor: colors.background.card,
+                      padding: '4px 8px',
+                      borderRadius: 2,
+                      border: `1px solid ${colors.border.light}`,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    }}
+                  >
+                    <ReputationIcons
+                      positiveVotes={0} // TODO: Obtener de la API
+                      negativeVotes={0} // TODO: Obtener de la API
+                      size="small"
+                    />
+                  </Box>
+                  
+                  {/* Icono de corazón negro (solo si hay votos negativos) */}
+                  {true && ( // TODO: Cambiar a negativeVotes > 0 cuando conectemos con API
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        bottom: -5,
+                        right: -5,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        backgroundColor: colors.background.card,
+                        padding: '4px 8px',
+                        borderRadius: 2,
+                        border: `1px solid ${colors.border.light}`,
+                        boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                      }}
+                    >
+                    <ReputationIcons
+                      positiveVotes={0}
+                      negativeVotes={1} // TODO: Obtener de la API
+                      size="small"
+                      showOnlyNegative={true}
+                    />
+                    </Box>
+                  )}
+                </Box>
+                
                 <input
                   accept="image/*"
                   style={{ display: 'none' }}

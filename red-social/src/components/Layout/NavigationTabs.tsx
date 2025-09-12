@@ -17,7 +17,7 @@ const NavigationTabs: React.FC = () => {
     if (path.startsWith(ROUTES.CONTACTS)) return NAVIGATION_TABS.CONTACTS;
     if (path.startsWith(ROUTES.EXPLORE)) return NAVIGATION_TABS.EXPLORE;
     
-    return NAVIGATION_TABS.PROFILE; // Default
+    return NAVIGATION_TABS.EXPLORE; // Default
   };
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: string) => {
@@ -79,20 +79,20 @@ const NavigationTabs: React.FC = () => {
           }}
         >
           <Tab
-            label="Mi Perfil"
-            value={NAVIGATION_TABS.PROFILE}
-          />
-          <Tab
-            label="Top Deseos"
-            value={NAVIGATION_TABS.WISHES}
+            label="Explorar"
+            value={NAVIGATION_TABS.EXPLORE}
           />
           <Tab
             label="Contactos"
             value={NAVIGATION_TABS.CONTACTS}
           />
           <Tab
-            label="Explorar"
-            value={NAVIGATION_TABS.EXPLORE}
+            label="Top Deseos"
+            value={NAVIGATION_TABS.WISHES}
+          />
+          <Tab
+            label="Mi Perfil"
+            value={NAVIGATION_TABS.PROFILE}
           />
         </Tabs>
       </Container>
