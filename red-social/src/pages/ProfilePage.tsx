@@ -36,7 +36,10 @@ const schema = yup.object({
   birthDate: yup
     .string()
     .required('La fecha de nacimiento es requerida'),
-  address: yup.string().optional(),
+  city: yup.string().optional(),
+  province: yup.string().optional(),
+  country: yup.string().optional(),
+  postalAddress: yup.string().optional(),
   age: yup.number().positive('La edad debe ser un número positivo').optional(),
 });
 
@@ -64,14 +67,22 @@ const ProfilePage: React.FC = () => {
         nickname: state.user.nickname,
         realName: state.user.realName,
         birthDate: state.user.birthDate,
-        address: state.user.address || '',
+        city: state.user.city || '',
+        province: state.user.province || '',
+        country: state.user.country || '',
+        postalAddress: state.user.postalAddress || '',
         age: state.user.age || undefined,
       });
       // Cargar la imagen del usuario
       if (state.user.profileImage) {
-        const imageUrl = state.user.profileImage.startsWith('http') 
-          ? state.user.profileImage 
-          : `http://localhost:3001${state.user.profileImage}`;
+        let imageUrl;
+        if (state.user.profileImage.startsWith('http')) {
+          imageUrl = state.user.profileImage;
+        } else if (state.user.profileImage.startsWith('/uploads/')) {
+          imageUrl = `http://localhost:3001${state.user.profileImage}`;
+        } else {
+          imageUrl = `http://localhost:3001/uploads/profiles/${state.user.profileImage}`;
+        }
         console.log('🖼️ Cargando imagen de perfil:', {
           originalImage: state.user.profileImage,
           finalUrl: imageUrl
@@ -181,6 +192,14 @@ const ProfilePage: React.FC = () => {
                       border: `3px solid ${colors.primary[200]}`,
                       boxShadow: '0 4px 12px rgba(20, 184, 166, 0.15)',
                       fontSize: { xs: '2rem', sm: '2.5rem' }
+                    }}
+                    onLoad={() => console.log('✅ Imagen de perfil cargada correctamente')}
+                    onError={(e) => {
+                      console.log('❌ Error al cargar imagen de perfil:', {
+                        previewImage,
+                        profileImage: state.user.profileImage,
+                        finalUrl: previewImage || getProfileImageUrl(state.user.profileImage)
+                      });
                     }}
                   >
                     {state.user.nickname.charAt(0).toUpperCase()}
@@ -302,15 +321,40 @@ const ProfilePage: React.FC = () => {
                     helperText={errors.age?.message}
                   />
                 </Grid>
-                <Grid item xs={12}>
+                <Grid item xs={12} sm={6}>
                   <TextField
                     fullWidth
-                    label="Dirección"
-                    multiline
-                    rows={3}
-                    {...register('address')}
-                    error={!!errors.address}
-                    helperText={errors.address?.message}
+                    label="Ciudad/Lugar"
+                    {...register('city')}
+                    error={!!errors.city}
+                    helperText={errors.city?.message}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Provincia"
+                    {...register('province')}
+                    error={!!errors.province}
+                    helperText={errors.province?.message}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="País"
+                    {...register('country')}
+                    error={!!errors.country}
+                    helperText={errors.country?.message}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Dirección Postal (Opcional)"
+                    {...register('postalAddress')}
+                    error={!!errors.postalAddress}
+                    helperText={errors.postalAddress?.message}
                   />
                 </Grid>
               </Grid>

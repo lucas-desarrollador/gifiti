@@ -109,8 +109,45 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
             : notif
         )
       );
+      
+      // Actualizar contador de no leídas
+      setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al marcar como leída');
+    } finally {
+      setMarkingAsRead(null);
+    }
+  };
+
+  // Revertir notificación (marcar como no leída)
+  const markAsUnread = async (notificationId: string) => {
+    try {
+      setMarkingAsRead(notificationId);
+      
+      const response = await fetch(`http://localhost:3001/api/birthday-notifications/${notificationId}/unread`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${state.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al revertir notificación');
+      }
+
+      // Actualizar estado local
+      setNotifications(prev => 
+        prev.map(notif => 
+          notif.id === notificationId 
+            ? { ...notif, read: false }
+            : notif
+        )
+      );
+      
+      // Actualizar contador de no leídas
+      setUnreadCount(prev => prev + 1);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error al revertir notificación');
     } finally {
       setMarkingAsRead(null);
     }
@@ -333,8 +370,8 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
                         </Typography>
                       }
                       secondary={
-                        <Box component="span">
-                          <Typography variant="body2" component="span" sx={{ color: colors.text.secondary, mb: 1, display: 'block' }}>
+                        <Box>
+                          <Typography variant="body2" sx={{ color: colors.text.secondary, mb: 1 }}>
                             {notification.contactNickname}
                           </Typography>
                           <Chip
@@ -354,32 +391,58 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
                       }
                     />
 
-                    {/* Botón marcar como leída */}
-                    {!notification.read && (
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<MarkReadIcon />}
-                        onClick={() => markAsRead(notification.id)}
-                        disabled={markingAsRead === notification.id}
-                        sx={{
-                          borderColor: colors.primary[500],
-                          color: colors.primary[500],
-                          '&:hover': {
-                            borderColor: colors.primary[600],
-                            backgroundColor: colors.primary[50],
-                          },
-                          minWidth: 'auto',
-                          px: 2,
-                        }}
-                      >
-                        {markingAsRead === notification.id ? (
-                          <CircularProgress size={16} color="inherit" />
-                        ) : (
-                          'Marcar'
-                        )}
-                      </Button>
-                    )}
+                    {/* Botones de acción */}
+                    <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+                      {!notification.read ? (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<MarkReadIcon />}
+                          onClick={() => markAsRead(notification.id)}
+                          disabled={markingAsRead === notification.id}
+                          sx={{
+                            borderColor: colors.primary[500],
+                            color: colors.primary[500],
+                            '&:hover': {
+                              borderColor: colors.primary[600],
+                              backgroundColor: colors.primary[50],
+                            },
+                            minWidth: 'auto',
+                            px: 2,
+                          }}
+                        >
+                          {markingAsRead === notification.id ? (
+                            <CircularProgress size={16} color="inherit" />
+                          ) : (
+                            'Marcar'
+                          )}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<MarkReadIcon />}
+                          onClick={() => markAsUnread(notification.id)}
+                          disabled={markingAsRead === notification.id}
+                          sx={{
+                            borderColor: colors.secondary[500],
+                            color: colors.secondary[500],
+                            '&:hover': {
+                              borderColor: colors.secondary[600],
+                              backgroundColor: colors.secondary[50],
+                            },
+                            minWidth: 'auto',
+                            px: 2,
+                          }}
+                        >
+                          {markingAsRead === notification.id ? (
+                            <CircularProgress size={16} color="inherit" />
+                          ) : (
+                            'Revertir'
+                          )}
+                        </Button>
+                      )}
+                    </Box>
                   </ListItem>
                   
                   {index < notifications.length - 1 && (

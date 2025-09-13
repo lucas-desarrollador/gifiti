@@ -53,9 +53,8 @@ export class WishService {
       formData.append('title', wishData.title);
       formData.append('description', wishData.description);
       
-      if (wishData.purchaseLink) {
-        formData.append('purchaseLink', wishData.purchaseLink);
-      }
+      // Siempre enviar purchaseLink, incluso si está vacío
+      formData.append('purchaseLink', wishData.purchaseLink || '');
       
       if (wishData.image) {
         formData.append('image', wishData.image);
@@ -94,9 +93,8 @@ export class WishService {
       formData.append('title', wishData.title);
       formData.append('description', wishData.description);
       
-      if (wishData.purchaseLink) {
-        formData.append('purchaseLink', wishData.purchaseLink);
-      }
+      // Siempre enviar purchaseLink, incluso si está vacío
+      formData.append('purchaseLink', wishData.purchaseLink || '');
       
       if (wishData.image) {
         formData.append('image', wishData.image);
@@ -181,25 +179,20 @@ export class WishService {
     }
   }
 
-  // Reservar deseo (marcar como regalado)
-  static async reserveWish(wishId: string, receiverId: string): Promise<Wish> {
+  // Reservar deseo
+  static async reserveWish(wishId: string): Promise<Wish> {
     try {
-      const response = await api.post<{ success: boolean; data: Wish }>(
-        `/wishes/${wishId}/reserve`,
-        { receiverId }
-      );
+      const response = await api.post<{ success: boolean; data: Wish }>(`/wishes/${wishId}/reserve`);
       return handleApiResponse(response);
     } catch (error) {
       throw new Error(handleApiError(error as any));
     }
   }
 
-  // Liberar deseo reservado
-  static async unreserveWish(wishId: string): Promise<Wish> {
+  // Cancelar reserva de un deseo
+  static async cancelReservation(wishId: string): Promise<Wish> {
     try {
-      const response = await api.post<{ success: boolean; data: Wish }>(
-        `/wishes/${wishId}/unreserve`
-      );
+      const response = await api.delete<{ success: boolean; data: Wish }>(`/wishes/${wishId}/reserve`);
       return handleApiResponse(response);
     } catch (error) {
       throw new Error(handleApiError(error as any));

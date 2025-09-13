@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Contact, User } from '../models';
+import { Contact, User, BirthdayNotification } from '../models';
 import { Op } from 'sequelize';
 import { getDaysUntilBirthday } from '../utils/dateUtils';
 
@@ -101,6 +101,39 @@ export const markAllBirthdayNotificationsAsRead = async (req: Request, res: Resp
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Revertir notificación de cumpleaños (marcar como no leída)
+export const markBirthdayNotificationAsUnread = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { notificationId } = req.params;
+
+    const notification = await BirthdayNotification.findOne({
+      where: { id: notificationId, userId: user.id },
+    });
+
+    if (!notification) {
+      return res.status(404).json({
+        success: false,
+        message: 'Notificación de cumpleaños no encontrada',
+      });
+    }
+
+    await notification.update({ read: false });
+
+    res.json({
+      success: true,
+      data: notification,
+      message: 'Notificación de cumpleaños revertida',
+    });
+  } catch (error) {
+    console.error('Error al revertir notificación de cumpleaños:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
     });
   }
 };

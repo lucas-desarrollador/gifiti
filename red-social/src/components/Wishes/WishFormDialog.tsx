@@ -27,10 +27,7 @@ const schema = yup.object({
     .string()
     .max(VALIDATION_RULES.WISH_DESCRIPTION_MAX_LENGTH, `La descripción no puede tener más de ${VALIDATION_RULES.WISH_DESCRIPTION_MAX_LENGTH} caracteres`)
     .required('La descripción es requerida'),
-  purchaseLink: yup
-    .string()
-    .url('Debe ser una URL válida')
-    .optional(),
+      purchaseLink: yup.string().optional(),
 });
 
 interface WishFormDialogProps {
@@ -73,7 +70,19 @@ const WishFormDialog: React.FC<WishFormDialogProps> = ({
           description: wish.description,
           purchaseLink: wish.purchaseLink || '',
         });
-        setPreviewImage(wish.image || '');
+        
+        // Construir URL de imagen correctamente
+        let imageUrl = '';
+        if (wish.image) {
+          if (wish.image.startsWith('http')) {
+            imageUrl = wish.image;
+          } else if (wish.image.startsWith('/uploads/')) {
+            imageUrl = `http://localhost:3001${wish.image}`;
+          } else {
+            imageUrl = `http://localhost:3001/uploads/wishes/${wish.image}`;
+          }
+        }
+        setPreviewImage(imageUrl);
       } else {
         reset({
           title: '',
@@ -115,10 +124,12 @@ const WishFormDialog: React.FC<WishFormDialogProps> = ({
 
   const handleFormSubmit = (data: WishForm) => {
     setError('');
+    console.log('📝 Datos del formulario:', data);
     const formData: WishForm = {
       ...data,
       image: imageFile || undefined,
     };
+    console.log('📤 Enviando datos:', formData);
     onSubmit(formData);
   };
 

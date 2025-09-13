@@ -10,7 +10,10 @@ interface UserAttributes {
   realName: string;
   birthDate: string;
   profileImage?: string;
-  address?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  postalAddress?: string;
   age?: number;
   createdAt: Date;
   updatedAt: Date;
@@ -26,7 +29,10 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public realName!: string;
   public birthDate!: string;
   public profileImage?: string;
-  public address?: string;
+  public city?: string;
+  public province?: string;
+  public country?: string;
+  public postalAddress?: string;
   public age?: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
@@ -87,7 +93,19 @@ User.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    address: {
+    city: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    province: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    country: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    postalAddress: {
       type: DataTypes.TEXT,
       allowNull: true,
     },

@@ -15,6 +15,7 @@ import googleAuthRoutes from './routes/googleAuthRoutes';
 import contactNotificationRoutes from './routes/contactNotificationRoutes';
 import birthdayNotificationRoutes from './routes/birthdayNotificationRoutes';
 import contactProfileRoutes from './routes/contactProfileRoutes';
+import notificationRoutes from './routes/notificationRoutes';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -50,6 +51,7 @@ app.use('/api/auth/google', googleAuthRoutes);
 app.use('/api/contact-notifications', contactNotificationRoutes);
 app.use('/api/birthday-notifications', birthdayNotificationRoutes);
 app.use('/api/contact-profile', contactProfileRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // Ruta de salud
 app.get('/api/health', (req: any, res: any) => {

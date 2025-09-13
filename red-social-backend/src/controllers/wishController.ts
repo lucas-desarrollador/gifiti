@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Wish, User } from '../models';
+import { createWishReservedNotification, createWishCancelledNotification } from './notificationController';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
@@ -147,11 +148,21 @@ export const updateWish = async (req: Request, res: Response) => {
     const { wishId } = req.params;
     const { title, description, purchaseLink } = req.body;
 
+    console.log('🔄 Actualizando deseo:', {
+      wishId,
+      userId: user.id,
+      title,
+      description,
+      purchaseLink,
+      hasFile: !!req.file
+    });
+
     const wish = await Wish.findOne({
       where: { id: wishId, userId: user.id }
     });
 
     if (!wish) {
+      console.log('❌ Deseo no encontrado');
       return res.status(404).json({
         success: false,
         message: 'Deseo no encontrado'
@@ -161,13 +172,20 @@ export const updateWish = async (req: Request, res: Response) => {
     const updateData: any = {};
     if (title) updateData.title = title;
     if (description) updateData.description = description;
-    if (purchaseLink !== undefined) updateData.purchaseLink = purchaseLink;
+    if (purchaseLink !== undefined) {
+      updateData.purchaseLink = purchaseLink;
+      console.log('🔗 Actualizando purchaseLink:', purchaseLink);
+    }
 
     if (req.file) {
       updateData.image = `/uploads/wishes/${req.file.filename}`;
     }
 
+    console.log('📝 Datos a actualizar:', updateData);
+
     await wish.update(updateData);
+
+    console.log('✅ Deseo actualizado exitosamente');
 
     res.json({
       success: true,
@@ -175,7 +193,7 @@ export const updateWish = async (req: Request, res: Response) => {
       message: 'Deseo actualizado exitosamente'
     });
   } catch (error) {
-    console.error('Error al actualizar deseo:', error);
+    console.error('❌ Error al actualizar deseo:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'
@@ -290,6 +308,138 @@ export const exploreWishes = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error al explorar deseos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Reservar un deseo
+export const reserveWish = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { wishId } = req.params;
+
+    console.log('🎯 Reservando deseo:', { wishId, userId: user.id });
+
+    const wish = await Wish.findOne({
+      where: { id: wishId }
+    });
+
+    if (!wish) {
+      return res.status(404).json({
+        success: false,
+        message: 'Deseo no encontrado'
+      });
+    }
+
+    // Verificar que no sea el propio deseo del usuario
+    if (wish.userId === user.id) {
+      return res.status(400).json({
+        success: false,
+        message: 'No puedes reservar tu propio deseo'
+      });
+    }
+
+    // Verificar que no esté ya reservado
+    if (wish.isReserved) {
+      return res.status(400).json({
+        success: false,
+        message: 'Este deseo ya está reservado'
+      });
+    }
+
+    // Actualizar el deseo como reservado
+    await wish.update({
+      isReserved: true,
+      reservedBy: user.id
+    });
+
+    // Obtener información del usuario que reserva
+    const reserver = await User.findByPk(user.id);
+    const reserverName = reserver?.realName || reserver?.nickname || 'Usuario';
+
+    // Crear notificación para el dueño del deseo
+    await createWishReservedNotification(
+      wish.userId,
+      user.id,
+      wish.id,
+      reserverName,
+      wish.title
+    );
+
+    console.log('✅ Deseo reservado exitosamente');
+
+    res.json({
+      success: true,
+      data: wish,
+      message: 'Deseo reservado exitosamente'
+    });
+  } catch (error) {
+    console.error('❌ Error al reservar deseo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Cancelar reserva de un deseo
+export const cancelReservation = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { wishId } = req.params;
+
+    console.log('🚫 Cancelando reserva:', { wishId, userId: user.id });
+
+    const wish = await Wish.findOne({
+      where: { id: wishId }
+    });
+
+    if (!wish) {
+      return res.status(404).json({
+        success: false,
+        message: 'Deseo no encontrado'
+      });
+    }
+
+    // Verificar que el usuario sea quien reservó el deseo
+    if (wish.reservedBy !== user.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'No tienes permisos para cancelar esta reserva'
+      });
+    }
+
+    // Actualizar el deseo como no reservado
+    await wish.update({
+      isReserved: false,
+      reservedBy: undefined
+    });
+
+    // Obtener información del usuario que cancela
+    const reserver = await User.findByPk(user.id);
+    const reserverName = reserver?.realName || reserver?.nickname || 'Usuario';
+
+    // Crear notificación para el dueño del deseo
+    await createWishCancelledNotification(
+      wish.userId,
+      user.id,
+      wish.id,
+      reserverName,
+      wish.title
+    );
+
+    console.log('✅ Reserva cancelada exitosamente');
+
+    res.json({
+      success: true,
+      data: wish,
+      message: 'Reserva cancelada exitosamente'
+    });
+  } catch (error) {
+    console.error('❌ Error al cancelar reserva:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'

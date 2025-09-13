@@ -45,3 +45,4 @@ export const getDaysUntilBirthday = (birthDate: string): number => {
   const diffTime = birthday.getTime() - today.getTime();
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 };
+

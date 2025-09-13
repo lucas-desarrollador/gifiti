@@ -15,6 +15,9 @@ import {
   Divider,
   Alert,
   IconButton,
+  Switch,
+  FormGroup,
+  FormControlLabel as SwitchFormControlLabel,
 } from '@mui/material';
 import {
   Close,
@@ -34,6 +37,16 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
   const [anticipation, setAnticipation] = useState<number>(5);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  
+  // Nuevas configuraciones de privacidad
+  const [showAge, setShowAge] = useState<boolean>(true);
+  const [showEmail, setShowEmail] = useState<boolean>(false);
+  const [showAllWishes, setShowAllWishes] = useState<boolean>(false);
+  const [showContactsList, setShowContactsList] = useState<boolean>(false);
+  const [showMutualFriends, setShowMutualFriends] = useState<boolean>(true);
+  const [showLocation, setShowLocation] = useState<boolean>(true);
+  const [showPostalAddress, setShowPostalAddress] = useState<boolean>(false);
+  const [isPublicProfile, setIsPublicProfile] = useState<boolean>(true);
 
   // Cargar preferencias del usuario al abrir el diálogo
   useEffect(() => {
@@ -42,6 +55,47 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
       const savedAnticipation = localStorage.getItem(`anticipation_${state.user.id}`);
       if (savedAnticipation) {
         setAnticipation(parseInt(savedAnticipation));
+      }
+      
+      // Cargar configuraciones de privacidad
+      const savedShowAge = localStorage.getItem(`showAge_${state.user.id}`);
+      if (savedShowAge) {
+        setShowAge(savedShowAge === 'true');
+      }
+      
+      const savedShowEmail = localStorage.getItem(`showEmail_${state.user.id}`);
+      if (savedShowEmail) {
+        setShowEmail(savedShowEmail === 'true');
+      }
+      
+      const savedShowAllWishes = localStorage.getItem(`showAllWishes_${state.user.id}`);
+      if (savedShowAllWishes) {
+        setShowAllWishes(savedShowAllWishes === 'true');
+      }
+      
+      const savedShowContactsList = localStorage.getItem(`showContactsList_${state.user.id}`);
+      if (savedShowContactsList) {
+        setShowContactsList(savedShowContactsList === 'true');
+      }
+      
+      const savedShowMutualFriends = localStorage.getItem(`showMutualFriends_${state.user.id}`);
+      if (savedShowMutualFriends) {
+        setShowMutualFriends(savedShowMutualFriends === 'true');
+      }
+      
+      const savedShowLocation = localStorage.getItem(`showLocation_${state.user.id}`);
+      if (savedShowLocation) {
+        setShowLocation(savedShowLocation === 'true');
+      }
+      
+      const savedShowPostalAddress = localStorage.getItem(`showPostalAddress_${state.user.id}`);
+      if (savedShowPostalAddress) {
+        setShowPostalAddress(savedShowPostalAddress === 'true');
+      }
+      
+      const savedIsPublicProfile = localStorage.getItem(`isPublicProfile_${state.user.id}`);
+      if (savedIsPublicProfile) {
+        setIsPublicProfile(savedIsPublicProfile === 'true');
       }
     }
   }, [open, state.user]);
@@ -53,6 +107,71 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
     // Guardar preferencia
     if (state.user) {
       localStorage.setItem(`anticipation_${state.user.id}`, value.toString());
+    }
+  };
+
+  // Funciones para manejar las nuevas configuraciones
+  const handleShowAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setShowAge(value);
+    if (state.user) {
+      localStorage.setItem(`showAge_${state.user.id}`, value.toString());
+    }
+  };
+
+  const handleShowEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setShowEmail(value);
+    if (state.user) {
+      localStorage.setItem(`showEmail_${state.user.id}`, value.toString());
+    }
+  };
+
+  const handleShowAllWishesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setShowAllWishes(value);
+    if (state.user) {
+      localStorage.setItem(`showAllWishes_${state.user.id}`, value.toString());
+    }
+  };
+
+  const handleShowContactsListChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setShowContactsList(value);
+    if (state.user) {
+      localStorage.setItem(`showContactsList_${state.user.id}`, value.toString());
+    }
+  };
+
+  const handleShowMutualFriendsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setShowMutualFriends(value);
+    if (state.user) {
+      localStorage.setItem(`showMutualFriends_${state.user.id}`, value.toString());
+    }
+  };
+
+  const handleShowLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setShowLocation(value);
+    if (state.user) {
+      localStorage.setItem(`showLocation_${state.user.id}`, value.toString());
+    }
+  };
+
+  const handleShowPostalAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setShowPostalAddress(value);
+    if (state.user) {
+      localStorage.setItem(`showPostalAddress_${state.user.id}`, value.toString());
+    }
+  };
+
+  const handleIsPublicProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.checked;
+    setIsPublicProfile(value);
+    if (state.user) {
+      localStorage.setItem(`isPublicProfile_${state.user.id}`, value.toString());
     }
   };
 
@@ -179,6 +298,162 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
               </RadioGroup>
             </FormControl>
           </Box>
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Sección de Privacidad del Perfil */}
+        <Box
+          sx={{
+            border: `1px solid ${colors.border.light}`,
+            borderRadius: 1,
+            p: 3,
+            backgroundColor: colors.background.secondary,
+            mb: 4,
+          }}
+        >
+          <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+            Privacidad del Perfil
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 3, color: colors.text.secondary }}>
+            Controla qué información personal es visible para tus contactos.
+          </Typography>
+          
+          <FormGroup>
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={showAge}
+                  onChange={handleShowAgeChange}
+                  color="primary"
+                />
+              }
+              label="Mostrar edad"
+            />
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={showEmail}
+                  onChange={handleShowEmailChange}
+                  color="primary"
+                />
+              }
+              label="Mostrar email"
+            />
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={showAllWishes}
+                  onChange={handleShowAllWishesChange}
+                  color="primary"
+                />
+              }
+              label="Mostrar todos los deseos (por defecto solo el #1)"
+            />
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={showContactsList}
+                  onChange={handleShowContactsListChange}
+                  color="primary"
+                />
+              }
+              label="Mostrar lista de contactos"
+            />
+            <Typography variant="caption" sx={{ color: colors.text.tertiary, mt: 1, ml: 2 }}>
+              {showContactsList 
+                ? "Tus contactos pueden ver a quién tienes en tu lista" 
+                : "Tu lista de contactos se mantiene privada"
+              }
+            </Typography>
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={showMutualFriends}
+                  onChange={handleShowMutualFriendsChange}
+                  color="primary"
+                />
+              }
+              label="Mostrar amigos en común"
+            />
+            <Typography variant="caption" sx={{ color: colors.text.tertiary, mt: 1, ml: 2 }}>
+              {showMutualFriends 
+                ? "Se muestran los contactos que tienes en común con otros usuarios" 
+                : "Los amigos en común se mantienen ocultos"
+              }
+            </Typography>
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={showLocation}
+                  onChange={handleShowLocationChange}
+                  color="primary"
+                />
+              }
+              label="Mostrar lugar (ciudad, provincia, país)"
+            />
+            <Typography variant="caption" sx={{ color: colors.text.tertiary, mt: 1, ml: 2 }}>
+              {showLocation 
+                ? "Se muestra tu ciudad, provincia y país" 
+                : "Tu ubicación se mantiene oculta"
+              }
+            </Typography>
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={showPostalAddress}
+                  onChange={handleShowPostalAddressChange}
+                  color="primary"
+                />
+              }
+              label="Mostrar dirección postal"
+            />
+            <Typography variant="caption" sx={{ color: colors.text.tertiary, mt: 1, ml: 2 }}>
+              {showPostalAddress 
+                ? "Se muestra tu dirección postal específica" 
+                : "Tu dirección postal se mantiene privada"
+              }
+            </Typography>
+          </FormGroup>
+        </Box>
+
+        <Divider sx={{ my: 3 }} />
+
+        {/* Sección de Visibilidad del Perfil */}
+        <Box
+          sx={{
+            border: `1px solid ${colors.border.light}`,
+            borderRadius: 1,
+            p: 3,
+            backgroundColor: colors.background.secondary,
+            mb: 4,
+          }}
+        >
+          <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
+            Visibilidad del Perfil
+          </Typography>
+          <Typography variant="body2" sx={{ mb: 3, color: colors.text.secondary }}>
+            Controla si tu perfil es visible para otros usuarios.
+          </Typography>
+          
+          <FormGroup>
+            <SwitchFormControlLabel
+              control={
+                <Switch
+                  checked={isPublicProfile}
+                  onChange={handleIsPublicProfileChange}
+                  color="primary"
+                />
+              }
+              label="Perfil público"
+            />
+            <Typography variant="caption" sx={{ color: colors.text.tertiary, mt: 1 }}>
+              {isPublicProfile 
+                ? "Tu perfil es visible para todos los usuarios" 
+                : "Tu perfil solo es visible para tus contactos"
+              }
+            </Typography>
+          </FormGroup>
         </Box>
 
         <Divider sx={{ my: 3 }} />

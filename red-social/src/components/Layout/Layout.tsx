@@ -8,6 +8,7 @@ import UserMenu from './UserMenu';
 import Footer from './Footer';
 import UserCounter from './UserCounter';
 import BirthdayNotificationsBell from './BirthdayNotificationsBell';
+import NotificationsBell from './NotificationsBell';
 import { colors } from '../../theme';
 
 interface LayoutProps {
@@ -87,6 +88,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {/* Campanita de cumpleaños */}
             <BirthdayNotificationsBell />
+            {/* Campanita de notificaciones generales */}
+            <NotificationsBell />
             <UserMenu />
           </Box>
         </Toolbar>

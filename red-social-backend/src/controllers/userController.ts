@@ -77,7 +77,10 @@ export const getProfile = async (req: Request, res: Response) => {
       realName: user.realName,
       birthDate: user.birthDate,
       profileImage: user.profileImage,
-      address: user.address,
+      city: user.city,
+      province: user.province,
+      country: user.country,
+      postalAddress: user.postalAddress,
       age: user.age,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
@@ -99,7 +102,7 @@ export const getProfile = async (req: Request, res: Response) => {
 export const updateProfile = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
-    const { nickname, realName, birthDate, address, age } = req.body;
+    const { nickname, realName, birthDate, city, province, country, postalAddress, age } = req.body;
 
     // Verificar si el nickname ya está en uso por otro usuario
     if (nickname && nickname !== user.nickname) {
@@ -119,7 +122,10 @@ export const updateProfile = async (req: Request, res: Response) => {
     if (nickname) updateData.nickname = nickname;
     if (realName) updateData.realName = realName;
     if (birthDate) updateData.birthDate = birthDate;
-    if (address !== undefined) updateData.address = address;
+    if (city !== undefined) updateData.city = city;
+    if (province !== undefined) updateData.province = province;
+    if (country !== undefined) updateData.country = country;
+    if (postalAddress !== undefined) updateData.postalAddress = postalAddress;
     if (age !== undefined) updateData.age = parseInt(age);
 
     // Manejar imagen de perfil si se subió
@@ -136,7 +142,10 @@ export const updateProfile = async (req: Request, res: Response) => {
       realName: user.realName,
       birthDate: user.birthDate,
       profileImage: user.profileImage,
-      address: user.address,
+      city: user.city,
+      province: user.province,
+      country: user.country,
+      postalAddress: user.postalAddress,
       age: user.age,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

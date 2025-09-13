@@ -7,7 +7,10 @@ export interface User {
   realName: string;
   birthDate: string;
   profileImage?: string;
-  address?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  postalAddress?: string;
   age?: number;
   createdAt: string;
   updatedAt: string;
@@ -39,13 +42,26 @@ export interface Contact {
 export interface Notification {
   id: string;
   userId: string;
-  type: 'wish_reserved' | 'wish_gifted' | 'contact_request' | 'contact_accepted';
+  type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder';
   title: string;
   message: string;
   isRead: boolean;
   relatedUserId?: string;
   relatedWishId?: string;
+  metadata?: any;
   createdAt: string;
+  updatedAt: string;
+  relatedUser?: {
+    id: string;
+    nickname: string;
+    realName: string;
+    profileImage?: string;
+  };
+  relatedWish?: {
+    id: string;
+    title: string;
+    image?: string;
+  };
 }
 
 export interface Gift {
@@ -95,7 +111,10 @@ export interface ProfileForm {
   nickname: string;
   realName: string;
   birthDate: string;
-  address?: string;
+  city?: string;
+  province?: string;
+  country?: string;
+  postalAddress?: string;
   age?: number;
   profileImage?: File;
 }

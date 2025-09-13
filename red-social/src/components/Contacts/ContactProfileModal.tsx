@@ -126,7 +126,14 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
         },
       }}
     >
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, pb: 1 }}>
+      <Box sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: 1, 
+        p: 2, 
+        pb: 1,
+        borderBottom: `1px solid ${colors.border.primary}`
+      }}>
         <GiftIcon sx={{ color: colors.primary[500] }} />
         <Typography variant="h6" sx={{ color: colors.text.primary, fontWeight: 600 }}>
           Perfil de Contacto
@@ -143,7 +150,7 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
         >
           <CloseIcon />
         </IconButton>
-      </DialogTitle>
+      </Box>
 
       <DialogContent sx={{ pt: 2 }}>
         {loading && (
@@ -162,17 +169,64 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
           <>
             {/* Información del contacto */}
             <Box sx={{ textAlign: 'center', mb: 3 }}>
-              <Avatar
-                src={getProfileImageUrl(contact.profileImage)}
-                sx={{
-                  width: 80,
-                  height: 80,
-                  margin: '0 auto 16px',
-                  border: `3px solid ${colors.primary[200]}`,
-                }}
-              >
-                {contact.nickname.charAt(0).toUpperCase()}
-              </Avatar>
+              <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                <Avatar
+                  src={getProfileImageUrl(contact.profileImage)}
+                  sx={{
+                    width: 120,
+                    height: 120,
+                    margin: '0 auto 16px',
+                    border: `3px solid ${colors.primary[200]}`,
+                    boxShadow: '0 4px 12px rgba(20, 184, 166, 0.15)',
+                  }}
+                >
+                  {contact.nickname.charAt(0).toUpperCase()}
+                </Avatar>
+                
+                {/* Iconos de reputación */}
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    bottom: 10,
+                    left: -10,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    backgroundColor: colors.background.card,
+                    padding: '4px 8px',
+                    borderRadius: 2,
+                    border: `1px solid ${colors.border.light}`,
+                    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                  }}
+                >
+                  <Typography variant="body2" sx={{ color: colors.primary[600], fontWeight: 600 }}>
+                    🎁 {contact.votes || 0}
+                  </Typography>
+                </Box>
+                
+                {/* Icono de corazón (solo si hay votos negativos) */}
+                {contact.votes < 0 && (
+                  <Box
+                    sx={{
+                      position: 'absolute',
+                      bottom: 10,
+                      right: -10,
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1,
+                      backgroundColor: colors.background.card,
+                      padding: '4px 8px',
+                      borderRadius: 2,
+                      border: `1px solid ${colors.border.light}`,
+                      boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                    }}
+                  >
+                    <Typography variant="body2" sx={{ color: colors.error[600], fontWeight: 600 }}>
+                      ❤️ {Math.abs(contact.votes)}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
               
               <Typography variant="h5" sx={{ color: colors.text.primary, fontWeight: 600, mb: 0.5 }}>
                 {contact.realName}
@@ -193,41 +247,6 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
               </Typography>
             </Box>
 
-            <Divider sx={{ my: 2 }} />
-
-            {/* Estadísticas */}
-            <Grid container spacing={2} sx={{ mb: 3 }}>
-              <Grid item xs={4}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ color: colors.primary[600], fontWeight: 600 }}>
-                    {contact.votes}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: colors.text.secondary }}>
-                    Votos
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={4}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ color: colors.primary[600], fontWeight: 600 }}>
-                    {contact.wishesCount}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: colors.text.secondary }}>
-                    Deseos
-                  </Typography>
-                </Box>
-              </Grid>
-              <Grid item xs={4}>
-                <Box sx={{ textAlign: 'center' }}>
-                  <Typography variant="h6" sx={{ color: colors.primary[600], fontWeight: 600 }}>
-                    {contact.isPublic.profile ? 'Público' : 'Privado'}
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: colors.text.secondary }}>
-                    Perfil
-                  </Typography>
-                </Box>
-              </Grid>
-            </Grid>
 
             {/* Lista de deseos */}
             {contact.isPublic.wishes && contact.wishes.length > 0 && (
@@ -235,30 +254,22 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
                 <Typography variant="h6" sx={{ color: colors.text.primary, mb: 2, fontWeight: 600 }}>
                   Sus Deseos ({contact.wishesCount})
                 </Typography>
-                <List sx={{ p: 0 }}>
+                <Box sx={{ pl: 0 }}>
                   {contact.wishes.slice(0, 5).map((wish) => (
-                    <ListItem key={wish.id} sx={{ px: 0, py: 0.5 }}>
-                      <ListItemText
-                        primary={
-                          <Typography variant="body2" sx={{ color: colors.text.primary }}>
-                            #{wish.position} {wish.title}
-                          </Typography>
-                        }
-                      />
-                    </ListItem>
+                    <Box key={wish.id} sx={{ py: 0.5, px: 0 }}>
+                      <Typography variant="body2" sx={{ color: colors.text.primary }}>
+                        #{wish.position} {wish.title}
+                      </Typography>
+                    </Box>
                   ))}
                   {contact.wishes.length > 5 && (
-                    <ListItem sx={{ px: 0, py: 0.5 }}>
-                      <ListItemText
-                        primary={
-                          <Typography variant="body2" sx={{ color: colors.text.tertiary, fontStyle: 'italic' }}>
-                            ... y {contact.wishes.length - 5} más
-                          </Typography>
-                        }
-                      />
-                    </ListItem>
+                    <Box sx={{ py: 0.5, px: 0 }}>
+                      <Typography variant="body2" sx={{ color: colors.text.tertiary, fontStyle: 'italic' }}>
+                        ... y {contact.wishes.length - 5} más
+                      </Typography>
+                    </Box>
                   )}
-                </List>
+                </Box>
               </Box>
             )}
 

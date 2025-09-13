@@ -68,13 +68,10 @@ Wish.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
-    purchaseLink: {
-      type: DataTypes.STRING,
-      allowNull: true,
-      validate: {
-        isUrl: true,
+      purchaseLink: {
+        type: DataTypes.STRING,
+        allowNull: true,
       },
-    },
     position: {
       type: DataTypes.INTEGER,
       allowNull: false,

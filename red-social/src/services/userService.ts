@@ -26,8 +26,20 @@ export class UserService {
       formData.append('realName', profileData.realName);
       formData.append('birthDate', profileData.birthDate);
       
-      if (profileData.address) {
-        formData.append('address', profileData.address);
+      if (profileData.city) {
+        formData.append('city', profileData.city);
+      }
+      
+      if (profileData.province) {
+        formData.append('province', profileData.province);
+      }
+      
+      if (profileData.country) {
+        formData.append('country', profileData.country);
+      }
+      
+      if (profileData.postalAddress) {
+        formData.append('postalAddress', profileData.postalAddress);
       }
       
       if (profileData.age) {
@@ -43,7 +55,10 @@ export class UserService {
         nickname: profileData.nickname,
         realName: profileData.realName,
         birthDate: profileData.birthDate,
-        address: profileData.address,
+        city: profileData.city,
+        province: profileData.province,
+        country: profileData.country,
+        postalAddress: profileData.postalAddress,
         age: profileData.age,
         hasImage: !!profileData.profileImage
       });

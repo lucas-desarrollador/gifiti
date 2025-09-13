@@ -16,7 +16,6 @@ import {
   DialogContent,
   DialogActions,
   Alert,
-  Fab,
 } from '@mui/material';
 import {
   Add,
@@ -131,26 +130,37 @@ const WishesPage: React.FC = () => {
           flexDirection={{ xs: 'column', sm: 'row' }}
           gap={{ xs: 2, sm: 0 }}
         >
-          <Typography 
-            variant="h4"
-            sx={{ 
-              fontSize: { xs: '1.75rem', sm: '2.125rem' },
-              color: colors.text.primary,
-              fontWeight: 600
-            }}
-          >
-            Top Deseos
-          </Typography>
-          <Typography 
-            variant="body2" 
-            color="text.secondary"
-            sx={{ 
-              fontSize: { xs: '0.875rem', sm: '0.875rem' },
-              color: colors.text.secondary
-            }}
-          >
-            {appState.wishes.length}/10 deseos
-          </Typography>
+          <Box display="flex" alignItems="center" gap={2}>
+            <Typography 
+              variant="h4"
+              sx={{ 
+                fontSize: { xs: '1.75rem', sm: '2.125rem' },
+                color: colors.text.primary,
+                fontWeight: 600
+              }}
+            >
+              Top Deseos
+            </Typography>
+            <Typography 
+              variant="body2" 
+              color="text.secondary"
+              sx={{ 
+                fontSize: { xs: '0.875rem', sm: '0.875rem' },
+                color: colors.text.secondary
+              }}
+            >
+              {appState.wishes.length}/10 deseos
+            </Typography>
+          </Box>
+          {canAddMoreWishes && (
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={handleAddWish}
+            >
+              Agregar Deseo
+            </Button>
+          )}
         </Box>
 
         {error && (
@@ -294,21 +304,7 @@ const WishesPage: React.FC = () => {
           </Grid>
         )}
 
-        {/* Botón flotante para agregar */}
-        {canAddMoreWishes && appState.wishes.length > 0 && (
-          <Fab
-            color="primary"
-            aria-label="agregar deseo"
-            sx={{
-              position: 'fixed',
-              bottom: 16,
-              right: 16,
-            }}
-            onClick={handleAddWish}
-          >
-            <Add />
-          </Fab>
-        )}
+        {/* Botón flotante eliminado - ahora está en el header */}
       </Paper>
 
       {/* Dialog para formulario de deseo */}

@@ -7,7 +7,9 @@ import {
   deleteWish,
   reorderWishes,
   exploreWishes,
-  uploadWishImage
+  uploadWishImage,
+  reserveWish,
+  cancelReservation
 } from '../controllers/wishController';
 import { authenticateToken } from '../middleware/auth';
 
@@ -25,6 +27,10 @@ router.put('/reorder', reorderWishes);
 router.get('/:wishId', getUserWishesById);
 router.put('/:wishId', uploadWishImage, updateWish);
 router.delete('/:wishId', deleteWish);
+
+// Rutas de reserva
+router.post('/:wishId/reserve', reserveWish);
+router.delete('/:wishId/reserve', cancelReservation);
 
 // Rutas de exploración
 router.get('/explore', exploreWishes);

@@ -2,7 +2,8 @@ import { Router } from 'express';
 import { 
   getBirthdayNotifications,
   markBirthdayNotificationAsRead,
-  markAllBirthdayNotificationsAsRead
+  markAllBirthdayNotificationsAsRead,
+  markBirthdayNotificationAsUnread
 } from '../controllers/birthdayNotificationController';
 import { authenticateToken } from '../middleware/auth';
 
@@ -16,6 +17,9 @@ router.get('/', getBirthdayNotifications);
 
 // Marcar notificación específica como leída
 router.put('/:notificationId/read', markBirthdayNotificationAsRead);
+
+// Revertir notificación específica (marcar como no leída)
+router.put('/:notificationId/unread', markBirthdayNotificationAsUnread);
 
 // Marcar todas las notificaciones como leídas
 router.put('/mark-all-read', markAllBirthdayNotificationsAsRead);
