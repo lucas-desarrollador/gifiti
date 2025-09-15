@@ -245,27 +245,46 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
               <Typography variant="body2" sx={{ color: colors.primary[600], fontWeight: 500 }}>
                 🎂 Cumple en {getDaysUntilBirthday(contact.birthDate)} días
               </Typography>
+
+              {/* Email - solo si está habilitado en configuración */}
+              {contact.email && (
+                <Typography variant="body2" sx={{ color: colors.text.secondary, mt: 1 }}>
+                  📧 {contact.email}
+                </Typography>
+              )}
             </Box>
 
 
             {/* Lista de deseos */}
-            {contact.isPublic.wishes && contact.wishes.length > 0 && (
+            {contact.wishes.length > 0 && (
               <Box sx={{ mb: 3 }}>
                 <Typography variant="h6" sx={{ color: colors.text.primary, mb: 2, fontWeight: 600 }}>
-                  Sus Deseos ({contact.wishesCount})
+                  Sus Deseos ({contact.isPublic.wishes ? contact.wishesCount : 1})
                 </Typography>
                 <Box sx={{ pl: 0 }}>
-                  {contact.wishes.slice(0, 5).map((wish) => (
-                    <Box key={wish.id} sx={{ py: 0.5, px: 0 }}>
-                      <Typography variant="body2" sx={{ color: colors.text.primary }}>
-                        #{wish.position} {wish.title}
-                      </Typography>
-                    </Box>
-                  ))}
-                  {contact.wishes.length > 5 && (
+                  {/* Si showAllWishes está habilitado, mostrar hasta 5 deseos */}
+                  {contact.isPublic.wishes ? (
+                    <>
+                      {contact.wishes.slice(0, 5).map((wish) => (
+                        <Box key={wish.id} sx={{ py: 0.5, px: 0 }}>
+                          <Typography variant="body2" sx={{ color: colors.text.primary }}>
+                            #{wish.position} {wish.title}
+                          </Typography>
+                        </Box>
+                      ))}
+                      {contact.wishes.length > 5 && (
+                        <Box sx={{ py: 0.5, px: 0 }}>
+                          <Typography variant="body2" sx={{ color: colors.text.tertiary, fontStyle: 'italic' }}>
+                            ... y {contact.wishes.length - 5} más
+                          </Typography>
+                        </Box>
+                      )}
+                    </>
+                  ) : (
+                    /* Si showAllWishes está deshabilitado, mostrar solo el #1 */
                     <Box sx={{ py: 0.5, px: 0 }}>
-                      <Typography variant="body2" sx={{ color: colors.text.tertiary, fontStyle: 'italic' }}>
-                        ... y {contact.wishes.length - 5} más
+                      <Typography variant="body2" sx={{ color: colors.text.primary }}>
+                        #{contact.wishes[0].position} {contact.wishes[0].title}
                       </Typography>
                     </Box>
                   )}

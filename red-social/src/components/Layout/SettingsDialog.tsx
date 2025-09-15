@@ -26,6 +26,7 @@ import {
 } from '@mui/icons-material';
 import { colors } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
+import { PrivacyService, PrivacySettings } from '../../services/privacyService';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -39,6 +40,7 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   
   // Nuevas configuraciones de privacidad
+  const [privacySettings, setPrivacySettings] = useState<PrivacySettings | null>(null);
   const [showAge, setShowAge] = useState<boolean>(true);
   const [showEmail, setShowEmail] = useState<boolean>(false);
   const [showAllWishes, setShowAllWishes] = useState<boolean>(false);
@@ -51,52 +53,32 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
   // Cargar preferencias del usuario al abrir el diálogo
   useEffect(() => {
     if (open && state.user) {
-      // En el futuro, esto vendrá de la API
+      // Cargar anticipación desde localStorage (mantener por ahora)
       const savedAnticipation = localStorage.getItem(`anticipation_${state.user.id}`);
       if (savedAnticipation) {
         setAnticipation(parseInt(savedAnticipation));
       }
       
-      // Cargar configuraciones de privacidad
-      const savedShowAge = localStorage.getItem(`showAge_${state.user.id}`);
-      if (savedShowAge) {
-        setShowAge(savedShowAge === 'true');
-      }
+      // Cargar configuraciones de privacidad desde el backend
+      const loadPrivacySettings = async () => {
+        try {
+          const settings = await PrivacyService.getPrivacySettings();
+          setPrivacySettings(settings);
+          setShowAge(settings.showAge);
+          setShowEmail(settings.showEmail);
+          setShowAllWishes(settings.showAllWishes);
+          setShowContactsList(settings.showContactsList);
+          setShowMutualFriends(settings.showMutualFriends);
+          setShowLocation(settings.showLocation);
+          setShowPostalAddress(settings.showPostalAddress);
+          setIsPublicProfile(settings.isPublicProfile);
+        } catch (error) {
+          console.error('Error al cargar configuraciones de privacidad:', error);
+          // En caso de error, mantener valores por defecto
+        }
+      };
       
-      const savedShowEmail = localStorage.getItem(`showEmail_${state.user.id}`);
-      if (savedShowEmail) {
-        setShowEmail(savedShowEmail === 'true');
-      }
-      
-      const savedShowAllWishes = localStorage.getItem(`showAllWishes_${state.user.id}`);
-      if (savedShowAllWishes) {
-        setShowAllWishes(savedShowAllWishes === 'true');
-      }
-      
-      const savedShowContactsList = localStorage.getItem(`showContactsList_${state.user.id}`);
-      if (savedShowContactsList) {
-        setShowContactsList(savedShowContactsList === 'true');
-      }
-      
-      const savedShowMutualFriends = localStorage.getItem(`showMutualFriends_${state.user.id}`);
-      if (savedShowMutualFriends) {
-        setShowMutualFriends(savedShowMutualFriends === 'true');
-      }
-      
-      const savedShowLocation = localStorage.getItem(`showLocation_${state.user.id}`);
-      if (savedShowLocation) {
-        setShowLocation(savedShowLocation === 'true');
-      }
-      
-      const savedShowPostalAddress = localStorage.getItem(`showPostalAddress_${state.user.id}`);
-      if (savedShowPostalAddress) {
-        setShowPostalAddress(savedShowPostalAddress === 'true');
-      }
-      
-      const savedIsPublicProfile = localStorage.getItem(`isPublicProfile_${state.user.id}`);
-      if (savedIsPublicProfile) {
-        setIsPublicProfile(savedIsPublicProfile === 'true');
-      }
+      loadPrivacySettings();
     }
   }, [open, state.user]);
 
@@ -111,68 +93,66 @@ const SettingsDialog: React.FC<SettingsDialogProps> = ({ open, onClose }) => {
   };
 
   // Funciones para manejar las nuevas configuraciones
+  const updatePrivacySetting = async (setting: string, value: boolean) => {
+    try {
+      const updatedSettings = {
+        ...privacySettings,
+        [setting]: value
+      };
+      
+      await PrivacyService.updatePrivacySettings(updatedSettings);
+      setPrivacySettings(updatedSettings);
+    } catch (error) {
+      console.error('Error al actualizar configuración de privacidad:', error);
+    }
+  };
+
   const handleShowAgeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setShowAge(value);
-    if (state.user) {
-      localStorage.setItem(`showAge_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('showAge', value);
   };
 
   const handleShowEmailChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setShowEmail(value);
-    if (state.user) {
-      localStorage.setItem(`showEmail_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('showEmail', value);
   };
 
   const handleShowAllWishesChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setShowAllWishes(value);
-    if (state.user) {
-      localStorage.setItem(`showAllWishes_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('showAllWishes', value);
   };
 
   const handleShowContactsListChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setShowContactsList(value);
-    if (state.user) {
-      localStorage.setItem(`showContactsList_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('showContactsList', value);
   };
 
   const handleShowMutualFriendsChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setShowMutualFriends(value);
-    if (state.user) {
-      localStorage.setItem(`showMutualFriends_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('showMutualFriends', value);
   };
 
   const handleShowLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setShowLocation(value);
-    if (state.user) {
-      localStorage.setItem(`showLocation_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('showLocation', value);
   };
 
   const handleShowPostalAddressChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setShowPostalAddress(value);
-    if (state.user) {
-      localStorage.setItem(`showPostalAddress_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('showPostalAddress', value);
   };
 
   const handleIsPublicProfileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.checked;
     setIsPublicProfile(value);
-    if (state.user) {
-      localStorage.setItem(`isPublicProfile_${state.user.id}`, value.toString());
-    }
+    updatePrivacySetting('isPublicProfile', value);
   };
 
   const handleDeleteAccount = async () => {

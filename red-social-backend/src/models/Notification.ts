@@ -113,3 +113,4 @@ Notification.belongsTo(User, { foreignKey: 'relatedUserId', as: 'relatedUser' })
 Notification.belongsTo(Wish, { foreignKey: 'relatedWishId', as: 'relatedWish' });
 
 export default Notification;
+

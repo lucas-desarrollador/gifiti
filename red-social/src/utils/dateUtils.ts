@@ -2,7 +2,11 @@
  * Formatea una fecha en formato ISO (YYYY-MM-DD) a una fecha legible en español
  * sin problemas de zona horaria
  */
-export const formatDateToSpanish = (isoDate: string): string => {
+export const formatDateToSpanish = (isoDate: string | undefined | null): string => {
+  if (!isoDate) {
+    return 'Fecha no disponible';
+  }
+  
   const [year, month, day] = isoDate.split('-').map(Number);
   const date = new Date(year, month - 1, day);
   return date.toLocaleDateString('es-ES', { 
@@ -15,7 +19,11 @@ export const formatDateToSpanish = (isoDate: string): string => {
 /**
  * Calcula la edad basada en una fecha de nacimiento en formato ISO
  */
-export const calculateAge = (birthDate: string): number => {
+export const calculateAge = (birthDate: string | undefined | null): number | null => {
+  if (!birthDate) {
+    return null;
+  }
+  
   const today = new Date();
   const [year, month, day] = birthDate.split('-').map(Number);
   const birth = new Date(year, month - 1, day);
@@ -33,7 +41,11 @@ export const calculateAge = (birthDate: string): number => {
 /**
  * Calcula los días hasta el próximo cumpleaños
  */
-export const getDaysUntilBirthday = (birthDate: string): number => {
+export const getDaysUntilBirthday = (birthDate: string | undefined | null): number | null => {
+  if (!birthDate) {
+    return null;
+  }
+  
   const today = new Date();
   const [year, month, day] = birthDate.split('-').map(Number);
   const birthday = new Date(today.getFullYear(), month - 1, day);

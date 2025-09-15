@@ -17,6 +17,8 @@ interface UserAttributes {
   age?: number;
   createdAt: Date;
   updatedAt: Date;
+  // Asociaciones
+  privacySettings?: any;
 }
 
 interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'createdAt' | 'updatedAt'> {}
@@ -36,6 +38,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public age?: number;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
+  // Asociaciones
+  public privacySettings?: any;
 
   // Método para verificar contraseña
   public async validatePassword(password: string): Promise<boolean> {

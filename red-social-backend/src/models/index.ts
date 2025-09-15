@@ -5,6 +5,7 @@ import Contact from './Contact';
 import { ReputationVote } from './ReputationVote';
 import Notification from './Notification';
 import BirthdayNotification from './BirthdayNotification';
+import { PrivacySettings } from './PrivacySettings';
 
 // Definir todas las relaciones
 User.hasMany(Wish, { foreignKey: 'userId', as: 'wishes' });
@@ -22,6 +23,10 @@ Wish.hasMany(Notification, { foreignKey: 'relatedWishId', as: 'notifications' })
 
 // Relaciones para notificaciones de cumpleaños
 User.hasMany(BirthdayNotification, { foreignKey: 'userId', as: 'birthdayNotifications' });
+
+// Relaciones para configuraciones de privacidad
+User.hasOne(PrivacySettings, { foreignKey: 'userId', as: 'privacySettings' });
+PrivacySettings.belongsTo(User, { foreignKey: 'userId', as: 'user' });
 
 // Sincronizar la base de datos
 const syncDatabase = async () => {
@@ -46,5 +51,6 @@ export {
   ReputationVote,
   Notification,
   BirthdayNotification,
+  PrivacySettings,
   syncDatabase,
 };
