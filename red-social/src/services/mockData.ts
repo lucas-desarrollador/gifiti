@@ -13,7 +13,7 @@ export const mockUser: User = {
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
-
+//comentario
 export const mockWishes: Wish[] = [
   {
     id: '1',
