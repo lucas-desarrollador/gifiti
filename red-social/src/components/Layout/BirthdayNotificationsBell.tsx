@@ -357,21 +357,18 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
                     </ListItemAvatar>
                     
                     <ListItemText
-                      primary={
-                        <Typography
-                          variant="subtitle1"
-                          component="span"
-                          sx={{
-                            color: colors.text.primary,
-                            fontWeight: notification.read ? 400 : 600,
-                          }}
-                        >
-                          {notification.contactName}
-                        </Typography>
-                      }
+                      primary={notification.contactName}
+                      primaryTypographyProps={{
+                        variant: 'subtitle1',
+                        component: 'span',
+                        sx: {
+                          color: colors.text.primary,
+                          fontWeight: notification.read ? 400 : 600,
+                        }
+                      }}
                       secondary={
                         <Box>
-                          <Typography variant="body2" sx={{ color: colors.text.secondary, mb: 1 }}>
+                          <Typography variant="body2" component="span" sx={{ color: colors.text.secondary, mb: 1, display: 'block' }}>
                             {notification.contactNickname}
                           </Typography>
                           <Chip

@@ -7,7 +7,11 @@ import {
   rejectContactRequest,
   removeContact,
   getPendingRequests,
-  searchUsersToAdd
+  getSentInvitations,
+  searchUsersToAdd,
+  blockAndRemoveContact,
+  getBlockedContacts,
+  unblockContact
 } from '../controllers/contactController';
 import { authenticateToken } from '../middleware/auth';
 
@@ -20,6 +24,7 @@ router.use(authenticateToken);
 router.get('/', getContacts);
 router.get('/birthday-order', getContactsByBirthday);
 router.get('/pending', getPendingRequests);
+router.get('/sent-invitations', getSentInvitations);
 router.get('/search', searchUsersToAdd);
 
 // Rutas de gestión de contactos
@@ -27,5 +32,10 @@ router.post('/request', sendContactRequest);
 router.put('/:contactId/accept', acceptContactRequest);
 router.put('/:contactId/reject', rejectContactRequest);
 router.delete('/:contactId', removeContact);
+
+// Rutas de bloqueo de contactos
+router.get('/blocked', getBlockedContacts);
+router.delete('/:contactId/block', blockAndRemoveContact);
+router.put('/:contactId/unblock', unblockContact);
 
 export default router;

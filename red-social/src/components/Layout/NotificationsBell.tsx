@@ -24,6 +24,7 @@ import {
   CardGiftcard as GiftIcon,
   Visibility as ViewIcon,
   Delete as IgnoreIcon,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { colors } from '../../theme';
 import { useAuth } from '../../context/AuthContext';
@@ -107,6 +108,19 @@ const NotificationsBell: React.FC = () => {
       setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       console.error('Error al ignorar notificación:', err);
+    }
+  };
+
+
+  const handleDelete = async (notificationId: string) => {
+    try {
+      await NotificationService.deleteNotification(notificationId);
+      
+      // Actualizar estado local
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+      setUnreadCount(prev => Math.max(0, prev - 1));
+    } catch (error) {
+      console.error('Error al eliminar notificación:', error);
     }
   };
 
@@ -254,28 +268,25 @@ const NotificationsBell: React.FC = () => {
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={
-                        <Typography
-                          variant="subtitle2"
-                          sx={{
-                            color: colors.text.primary,
-                            fontWeight: notification.isRead ? 400 : 600,
-                            mb: 0.5,
-                          }}
-                        >
-                          {notification.title}
-                        </Typography>
-                      }
+                      primary={notification.title}
+                      primaryTypographyProps={{
+                        variant: 'subtitle2',
+                        sx: {
+                          color: colors.text.primary,
+                          fontWeight: notification.isRead ? 400 : 600,
+                          mb: 0.5,
+                        }
+                      }}
                       secondary={
                         <Box>
-                          <Typography variant="body2" sx={{ color: colors.text.secondary, mb: 1 }}>
+                          <Typography variant="body2" component="span" sx={{ color: colors.text.secondary, mb: 1, display: 'block' }}>
                             {revealedNotifications.has(notification.id) 
                               ? notification.message 
                               : `Alguien ha reservado tu deseo "${notification.relatedWish?.title || 'deseo'}"`
                             }
                           </Typography>
                           {ignoredNotifications.has(notification.id) && (
-                            <Typography variant="caption" sx={{ color: colors.text.tertiary, fontStyle: 'italic' }}>
+                            <Typography variant="caption" component="span" sx={{ color: colors.text.tertiary, fontStyle: 'italic', display: 'block' }}>
                               Reserva confirmada - Se mantendrá hasta la fecha del cumpleaños
                             </Typography>
                           )}
@@ -283,24 +294,34 @@ const NotificationsBell: React.FC = () => {
                             <Typography variant="caption" sx={{ color: colors.text.tertiary }}>
                               {formatTimeAgo(notification.createdAt)}
                             </Typography>
-                            {!notification.isRead && !ignoredNotifications.has(notification.id) && (
-                              <ButtonGroup size="small" variant="text">
-                                <Button
-                                  startIcon={<ViewIcon />}
-                                  onClick={() => handleMarkAsRead(notification.id)}
-                                  sx={{ color: colors.primary?.[600] || '#0d9488', fontSize: '0.75rem' }}
-                                >
-                                  VER
-                                </Button>
-                                <Button
-                                  startIcon={<IgnoreIcon />}
-                                  onClick={() => handleIgnore(notification.id)}
-                                  sx={{ color: colors.error?.[600] || '#d32f2f', fontSize: '0.75rem' }}
-                                >
-                                  IGNORAR
-                                </Button>
-                              </ButtonGroup>
-                            )}
+                            <ButtonGroup size="small" variant="text">
+                              {!notification.isRead && !ignoredNotifications.has(notification.id) && (
+                                <>
+                                  <Button
+                                    startIcon={<ViewIcon />}
+                                    onClick={() => handleMarkAsRead(notification.id)}
+                                    sx={{ color: colors.primary?.[600] || '#0d9488', fontSize: '0.75rem' }}
+                                  >
+                                    VER
+                                  </Button>
+                                  <Button
+                                    startIcon={<IgnoreIcon />}
+                                    onClick={() => handleIgnore(notification.id)}
+                                    sx={{ color: colors.error?.[600] || '#d32f2f', fontSize: '0.75rem' }}
+                                  >
+                                    IGNORAR
+                                  </Button>
+                                </>
+                              )}
+                              <Button
+                                startIcon={<DeleteIcon />}
+                                onClick={() => handleDelete(notification.id)}
+                                sx={{ color: colors.error?.[600] || '#d32f2f', fontSize: '0.75rem' }}
+                                size="small"
+                              >
+                                Descartar
+                              </Button>
+                            </ButtonGroup>
                           </Box>
                         </Box>
                       }

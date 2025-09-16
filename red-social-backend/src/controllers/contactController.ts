@@ -37,20 +37,39 @@ export const getContactsByBirthday = async (req: Request, res: Response) => {
 
     const contacts = await Contact.findAll({
       where: { 
-        userId: user.id,
-        status: 'accepted'
+        [Op.or]: [
+          { userId: user.id, status: 'accepted' },
+          { contactId: user.id, status: 'accepted' }
+        ]
       },
       include: [
         {
           model: User,
           as: 'contact',
           attributes: ['id', 'nickname', 'realName', 'profileImage', 'birthDate']
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'nickname', 'realName', 'profileImage', 'birthDate']
         }
       ]
     });
 
+    // Transformar contactos para que siempre muestren la información del otro usuario
+    const transformedContacts = contacts.map(contact => {
+      // Si el usuario actual es userId, mostrar la información del contact
+      // Si el usuario actual es contactId, mostrar la información del user
+      const otherUser = contact.userId === user.id ? contact.contact : contact.user;
+      
+      return {
+        ...contact.toJSON(),
+        contact: otherUser
+      };
+    });
+
     // Ordenar por proximidad de cumpleaños
-    const sortedContacts = contacts.sort((a, b) => {
+    const sortedContacts = transformedContacts.sort((a, b) => {
       const today = new Date();
       
       // Calcular días hasta el próximo cumpleaños
@@ -181,13 +200,31 @@ export const acceptContactRequest = async (req: Request, res: Response) => {
           model: User,
           as: 'user',
           attributes: ['id', 'nickname', 'realName', 'profileImage', 'birthDate']
+        },
+        {
+          model: User,
+          as: 'contact',
+          attributes: ['id', 'nickname', 'realName', 'profileImage', 'birthDate']
         }
       ]
     });
 
+    // Transformar para que el campo 'contact' siempre contenga la información del usuario que envió la invitación
+    if (!updatedContact) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contacto no encontrado después de la actualización'
+      });
+    }
+
+    const transformedContact = {
+      ...updatedContact.toJSON(),
+      contact: updatedContact.user // El usuario que envió la invitación
+    };
+
     res.json({
       success: true,
-      data: updatedContact,
+      data: transformedContact,
       message: 'Solicitud de contacto aceptada exitosamente'
     });
   } catch (error) {
@@ -239,21 +276,58 @@ export const removeContact = async (req: Request, res: Response) => {
     const user = (req as any).user;
     const { contactId } = req.params;
 
+    console.log('🔍 Eliminando contacto:', {
+      userId: user.id,
+      contactId: contactId
+    });
+
     const contact = await Contact.findOne({
       where: { 
         id: contactId,
-        userId: user.id
+        [Op.or]: [
+          { userId: user.id },
+          { contactId: user.id }
+        ]
       }
     });
 
     if (!contact) {
+      console.log('❌ Contacto no encontrado');
       return res.status(404).json({
         success: false,
         message: 'Contacto no encontrado'
       });
     }
 
+    console.log('✅ Contacto encontrado:', {
+      id: contact.id,
+      userId: contact.userId,
+      contactId: contact.contactId
+    });
+
+    // Eliminar el contacto principal
     await contact.destroy();
+    console.log('✅ Contacto principal eliminado');
+
+    // También eliminar el contacto recíproco si existe
+    const reciprocalContact = await Contact.findOne({
+      where: {
+        userId: contact.contactId,
+        contactId: user.id
+      }
+    });
+
+    if (reciprocalContact) {
+      console.log('✅ Contacto recíproco encontrado, eliminando:', {
+        id: reciprocalContact.id,
+        userId: reciprocalContact.userId,
+        contactId: reciprocalContact.contactId
+      });
+      await reciprocalContact.destroy();
+      console.log('✅ Contacto recíproco eliminado');
+    } else {
+      console.log('⚠️ No se encontró contacto recíproco');
+    }
 
     res.json({
       success: true,
@@ -273,7 +347,7 @@ export const getPendingRequests = async (req: Request, res: Response) => {
     const user = (req as any).user;
 
     const pendingRequests = await Contact.findAll({
-      where: { 
+      where: {
         contactId: user.id,
         status: 'pending'
       },
@@ -293,6 +367,38 @@ export const getPendingRequests = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error al obtener solicitudes pendientes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+export const getSentInvitations = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+
+    const sentInvitations = await Contact.findAll({
+      where: {
+        userId: user.id,
+        status: 'pending'
+      },
+      include: [
+        {
+          model: User,
+          as: 'contact',
+          attributes: ['id', 'nickname', 'realName', 'profileImage', 'birthDate']
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.json({
+      success: true,
+      data: sentInvitations
+    });
+  } catch (error) {
+    console.error('Error al obtener invitaciones enviadas:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'
@@ -353,6 +459,132 @@ export const searchUsersToAdd = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Error al buscar usuarios para agregar:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Bloquear y eliminar contacto
+export const blockAndRemoveContact = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { contactId } = req.params;
+
+    // Buscar el contacto
+    const contact = await Contact.findOne({
+      where: {
+        id: contactId,
+        userId: user.id
+      }
+    });
+
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contacto no encontrado'
+      });
+    }
+
+    // Marcar como bloqueado y eliminar
+    await contact.update({
+      status: 'blocked',
+      deletedAt: new Date()
+    });
+
+    // También eliminar el contacto recíproco si existe
+    const reciprocalContact = await Contact.findOne({
+      where: {
+        userId: contact.contactId,
+        contactId: user.id
+      }
+    });
+
+    if (reciprocalContact) {
+      await reciprocalContact.update({
+        status: 'blocked',
+        deletedAt: new Date()
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Contacto bloqueado y eliminado exitosamente'
+    });
+  } catch (error) {
+    console.error('Error al bloquear y eliminar contacto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Obtener contactos bloqueados
+export const getBlockedContacts = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+
+    const blockedContacts = await Contact.findAll({
+      where: {
+        userId: user.id,
+        status: 'blocked'
+      },
+      include: [
+        {
+          model: User,
+          as: 'contact',
+          attributes: ['id', 'nickname', 'realName', 'profileImage', 'birthDate']
+        }
+      ],
+      order: [['createdAt', 'DESC']]
+    });
+
+    res.json({
+      success: true,
+      data: blockedContacts
+    });
+  } catch (error) {
+    console.error('Error al obtener contactos bloqueados:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor'
+    });
+  }
+};
+
+// Desbloquear contacto
+export const unblockContact = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { contactId } = req.params;
+
+    // Buscar el contacto bloqueado
+    const contact = await Contact.findOne({
+      where: {
+        id: contactId,
+        userId: user.id,
+        status: 'blocked'
+      }
+    });
+
+    if (!contact) {
+      return res.status(404).json({
+        success: false,
+        message: 'Contacto bloqueado no encontrado'
+      });
+    }
+
+    // Eliminar el contacto bloqueado (no restaurar, solo eliminar de la lista de bloqueados)
+    await contact.destroy();
+
+    res.json({
+      success: true,
+      message: 'Contacto desbloqueado exitosamente'
+    });
+  } catch (error) {
+    console.error('Error al desbloquear contacto:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor'

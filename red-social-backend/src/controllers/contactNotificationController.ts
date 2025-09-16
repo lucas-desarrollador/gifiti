@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { Contact, User } from '../models';
+import { Contact, User, Notification } from '../models';
 
 // Enviar invitación de contacto
 export const sendContactInvitation = async (req: Request, res: Response) => {
@@ -72,6 +72,25 @@ export const sendContactInvitation = async (req: Request, res: Response) => {
     const invitingUser = await User.findByPk(userId, {
       attributes: ['id', 'nickname', 'profileImage']
     });
+
+    // Crear notificación para el usuario que recibe la invitación
+    try {
+      await Notification.create({
+        userId: contactId,
+        type: 'contact_request',
+        title: 'Nueva invitación de contacto',
+        message: `${invitingUser?.nickname || 'Alguien'} quiere agregarte como contacto`,
+        relatedUserId: userId,
+        metadata: {
+          invitingUserName: invitingUser?.nickname,
+          invitingUserImage: invitingUser?.profileImage,
+        },
+      });
+      console.log('✅ Notificación de invitación creada');
+    } catch (notificationError) {
+      console.error('❌ Error al crear notificación de invitación:', notificationError);
+      // No fallar la operación principal si la notificación falla
+    }
 
     res.json({
       success: true,

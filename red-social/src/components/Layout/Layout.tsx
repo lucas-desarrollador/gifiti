@@ -1,6 +1,6 @@
-import React, { ReactNode } from 'react';
-import { Box, AppBar, Toolbar, Typography, Container, IconButton } from '@mui/material';
-import { CardGiftcard, Notifications } from '@mui/icons-material';
+import React, { type ReactNode } from 'react';
+import { Box, AppBar, Toolbar, Typography, Container } from '@mui/material';
+import { CardGiftcard } from '@mui/icons-material';
 import { useAuth } from '../../context/AuthContext';
 import { APP_NAME } from '../../constants';
 import NavigationTabs from './NavigationTabs';
@@ -9,6 +9,7 @@ import Footer from './Footer';
 import UserCounter from './UserCounter';
 import BirthdayNotificationsBell from './BirthdayNotificationsBell';
 import NotificationsBell from './NotificationsBell';
+import ContactInvitationsBell from './ContactInvitationsBell';
 import { colors } from '../../theme';
 
 interface LayoutProps {
@@ -90,6 +91,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <BirthdayNotificationsBell />
             {/* Campanita de notificaciones generales */}
             <NotificationsBell />
+            {/* Campanita de invitaciones de contacto */}
+            <ContactInvitationsBell />
             <UserMenu />
           </Box>
         </Toolbar>

@@ -77,11 +77,78 @@ export class ContactService {
     }
   }
 
+  // Bloquear y eliminar contacto
+  static async blockAndRemoveContact(contactId: string): Promise<void> {
+    try {
+      await api.delete(`/contacts/${contactId}/block`);
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
+  // Obtener contactos bloqueados
+  static async getBlockedContacts(): Promise<Contact[]> {
+    try {
+      const response = await api.get<{ success: boolean; data: Contact[] }>('/contacts/blocked');
+      return handleApiResponse(response);
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
+  // Desbloquear contacto
+  static async unblockContact(contactId: string): Promise<void> {
+    try {
+      await api.put(`/contacts/${contactId}/unblock`);
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
   // Obtener solicitudes pendientes
   static async getPendingRequests(): Promise<Contact[]> {
     try {
       const response = await api.get<{ success: boolean; data: Contact[] }>('/contacts/pending');
       return handleApiResponse(response);
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
+  // Obtener invitaciones enviadas (pendientes de respuesta)
+  static async getSentInvitations(): Promise<Contact[]> {
+    try {
+      const response = await api.get<{ success: boolean; data: Contact[] }>('/contacts/sent-invitations');
+      return handleApiResponse(response);
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
+  // Obtener invitaciones pendientes (alias para getPendingRequests)
+  static async getPendingInvitations(): Promise<{ invitations: Contact[] }> {
+    try {
+      const invitations = await this.getPendingRequests();
+      return { invitations };
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
+  // Aceptar invitación
+  static async acceptInvitation(contactId: string): Promise<{ contact: Contact }> {
+    try {
+      const response = await api.put<{ success: boolean; data: Contact }>(`/contacts/${contactId}/accept`);
+      return { contact: handleApiResponse(response) };
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
+  // Rechazar invitación
+  static async rejectInvitation(contactId: string): Promise<void> {
+    try {
+      await this.rejectContactRequest(contactId);
     } catch (error) {
       throw new Error(handleApiError(error as any));
     }

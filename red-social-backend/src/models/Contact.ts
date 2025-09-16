@@ -6,7 +6,8 @@ interface ContactAttributes {
   id: string;
   userId: string;
   contactId: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: 'pending' | 'accepted' | 'rejected' | 'blocked';
+  deletedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -17,7 +18,8 @@ class Contact extends Model<ContactAttributes, ContactCreationAttributes> implem
   public id!: string;
   public userId!: string;
   public contactId!: string;
-  public status!: 'pending' | 'accepted' | 'rejected';
+  public status!: 'pending' | 'accepted' | 'rejected' | 'blocked';
+  public deletedAt?: Date;
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -50,9 +52,13 @@ Contact.init(
       },
     },
     status: {
-      type: DataTypes.ENUM('pending', 'accepted', 'rejected'),
+      type: DataTypes.ENUM('pending', 'accepted', 'rejected', 'blocked'),
       allowNull: false,
       defaultValue: 'pending',
+    },
+    deletedAt: {
+      type: DataTypes.DATE,
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,

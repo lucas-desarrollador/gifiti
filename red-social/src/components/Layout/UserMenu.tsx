@@ -18,7 +18,6 @@ import {
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import NotificationsPanel from './NotificationsPanel';
-import ContactNotificationsPanel from './ContactNotificationsPanel';
 import SettingsDialog from './SettingsDialog';
 
 const UserMenu: React.FC = () => {
@@ -26,7 +25,6 @@ const UserMenu: React.FC = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [contactNotificationsOpen, setContactNotificationsOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const open = Boolean(anchorEl);
 
@@ -63,10 +61,6 @@ const UserMenu: React.FC = () => {
     handleClose();
   };
 
-  const handleContactNotifications = () => {
-    setContactNotificationsOpen(true);
-    handleClose();
-  };
 
   if (!state.user) {
     return null;
@@ -147,13 +141,6 @@ const UserMenu: React.FC = () => {
           Notificaciones
         </MenuItem>
         
-        <MenuItem onClick={handleContactNotifications}>
-          <ListItemIcon>
-            <PersonAdd fontSize="small" />
-          </ListItemIcon>
-          Invitaciones de Contacto
-        </MenuItem>
-        
         <MenuItem onClick={handleSettings}>
           <ListItemIcon>
             <Settings fontSize="small" />
@@ -175,12 +162,6 @@ const UserMenu: React.FC = () => {
       <NotificationsPanel
         open={notificationsOpen}
         onClose={() => setNotificationsOpen(false)}
-      />
-
-      {/* Contact Notifications Panel */}
-      <ContactNotificationsPanel
-        open={contactNotificationsOpen}
-        onClose={() => setContactNotificationsOpen(false)}
       />
 
       {/* Settings Dialog */}

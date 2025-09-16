@@ -23,8 +23,8 @@ class GoogleAuthService {
   private scope: string;
 
   constructor() {
-    // Client ID real de Google Cloud Console
-    this.clientId = '202608487449-q8gp5ju0gl43tbhbslv3lg5i618jbd54.apps.googleusercontent.com';
+    // Client ID desde variables de entorno
+    this.clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '202608487449-q8gp5ju0gl43tbhbslv3lg5i618jbd54.apps.googleusercontent.com';
     this.redirectUri = window.location.origin + '/auth/google/callback';
     this.scope = 'openid email profile';
   }

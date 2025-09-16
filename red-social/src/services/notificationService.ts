@@ -85,5 +85,6 @@ export class NotificationService {
       throw new Error(handleApiError(error as any));
     }
   }
+
 }
 
