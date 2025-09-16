@@ -12,6 +12,7 @@ export interface User {
   country?: string;
   postalAddress?: string;
   age?: number;
+  isPublic?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -28,6 +29,7 @@ export interface Wish {
   reservedBy?: string;
   createdAt: string;
   updatedAt: string;
+  user?: User; // Información del usuario que creó el deseo
 }
 
 export interface Contact {
@@ -139,7 +141,8 @@ export interface PaginatedResponse<T> {
   total: number;
   page: number;
   limit: number;
-  totalPages: number;
+  totalPages?: number;
+  hasMore?: boolean;
 }
 
 // Tipos para navegación

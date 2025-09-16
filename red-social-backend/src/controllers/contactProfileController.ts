@@ -8,12 +8,15 @@ export const getContactProfile = async (req: Request, res: Response) => {
     const user = (req as any).user;
     const { contactId } = req.params;
 
-    // Verificar que el contacto existe y está aceptado
+    console.log('🔍 Buscando perfil de contacto:', { userId: user.id, contactId });
+
+    // Verificar que el contacto existe y está aceptado (búsqueda bidireccional)
     const contact = await Contact.findOne({
       where: { 
-        userId: user.id,
-        contactId: contactId,
-        status: 'accepted'
+        [Op.or]: [
+          { userId: user.id, contactId: contactId, status: 'accepted' },
+          { userId: contactId, contactId: user.id, status: 'accepted' }
+        ]
       },
       include: [
         {
@@ -27,19 +30,55 @@ export const getContactProfile = async (req: Request, res: Response) => {
               required: false // LEFT JOIN para incluir usuarios sin configuraciones
             }
           ]
+        },
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'nickname', 'realName', 'profileImage', 'birthDate', 'email', 'city', 'province', 'country', 'postalAddress'],
+          include: [
+            {
+              model: PrivacySettings,
+              as: 'privacySettings',
+              required: false // LEFT JOIN para incluir usuarios sin configuraciones
+            }
+          ]
         }
       ]
     });
 
     if (!contact) {
+      console.log('❌ Contacto no encontrado');
       return res.status(404).json({
         success: false,
         message: 'Contacto no encontrado'
       });
     }
 
-    const contactUser = contact.contact;
+    console.log('✅ Contacto encontrado:', { 
+      contactId: contact.id, 
+      userId: contact.userId, 
+      contactUserId: contact.contactId 
+    });
+
+    // Determinar cuál es el usuario del contacto (el que no es el usuario actual)
+    console.log('🔍 Determinando usuario del contacto:', {
+      currentUserId: user.id,
+      contactUserId: contact.userId,
+      contactContactId: contact.contactId,
+      hasContact: !!contact.contact,
+      hasUser: !!contact.user
+    });
+    
+    const contactUser = contact.userId === user.id ? contact.contact : contact.user;
+    console.log('👤 Usuario del contacto determinado:', {
+      contactUser: contactUser ? {
+        id: contactUser.id,
+        nickname: contactUser.nickname
+      } : null
+    });
+    
     if (!contactUser) {
+      console.log('❌ Usuario del contacto no encontrado');
       return res.status(404).json({
         success: false,
         message: 'Usuario del contacto no encontrado'
@@ -147,12 +186,13 @@ export const getContactWishes = async (req: Request, res: Response) => {
     const user = (req as any).user;
     const { contactId } = req.params;
 
-    // Verificar que el contacto existe y está aceptado
+    // Verificar que el contacto existe y está aceptado (búsqueda bidireccional)
     const contact = await Contact.findOne({
       where: { 
-        userId: user.id,
-        contactId: contactId,
-        status: 'accepted'
+        [Op.or]: [
+          { userId: user.id, contactId: contactId, status: 'accepted' },
+          { userId: contactId, contactId: user.id, status: 'accepted' }
+        ]
       },
       include: [
         {

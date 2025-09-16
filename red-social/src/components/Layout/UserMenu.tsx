@@ -138,7 +138,7 @@ const UserMenu: React.FC = () => {
           <ListItemIcon>
             <Notifications fontSize="small" />
           </ListItemIcon>
-          Notificaciones
+          Avisos
         </MenuItem>
         
         <MenuItem onClick={handleSettings}>

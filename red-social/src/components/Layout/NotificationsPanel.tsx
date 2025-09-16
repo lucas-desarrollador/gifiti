@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Drawer,
   Box,
@@ -12,6 +12,8 @@ import {
   Divider,
   Chip,
   Paper,
+  Button,
+  CircularProgress,
 } from '@mui/material';
 import {
   Close,
@@ -19,18 +21,10 @@ import {
   Cake,
   PersonAdd,
   CardGiftcard,
+  Delete as DeleteIcon,
 } from '@mui/icons-material';
 import { colors } from '../../theme';
-
-interface Notification {
-  id: string;
-  type: 'birthday' | 'contact' | 'wish' | 'system';
-  title: string;
-  message: string;
-  timestamp: Date;
-  read: boolean;
-  avatar?: string;
-}
+import { NotificationService, Notification } from '../../services/notificationService';
 
 interface NotificationsPanelProps {
   open: boolean;
@@ -38,51 +32,65 @@ interface NotificationsPanelProps {
 }
 
 const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }) => {
-  // Datos de prueba - en el futuro vendrán de la API
-  // NOTA: Las notificaciones de cumpleaños ahora se manejan en BirthdayNotificationsBell
-  const notifications: Notification[] = [
-    {
-      id: '2',
-      type: 'contact',
-      title: 'Nuevo contacto',
-      message: 'Juan te agregó como contacto',
-      timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 horas atrás
-      read: false,
-    },
-    {
-      id: '3',
-      type: 'wish',
-      title: 'Nuevo deseo',
-      message: 'Ana agregó un nuevo deseo',
-      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 día atrás
-      read: true,
-    },
-    {
-      id: '4',
-      type: 'system',
-      title: 'Bienvenido a GiFiTi',
-      message: 'Tu cuenta ha sido creada exitosamente',
-      timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 días atrás
-      read: true,
-    },
-  ];
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const loadAvisos = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await NotificationService.getAvisos();
+      setNotifications(response.notifications);
+    } catch (err) {
+      console.error('Error al cargar avisos:', err);
+      setError('Error al cargar los avisos');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (open) {
+      loadAvisos();
+    }
+  }, [open]);
+
+  const handleDeleteNotification = async (notificationId: string) => {
+    try {
+      await NotificationService.deleteNotification(notificationId);
+      setNotifications(prev => prev.filter(n => n.id !== notificationId));
+    } catch (err) {
+      console.error('Error al eliminar aviso:', err);
+      setError('Error al eliminar el aviso');
+    }
+  };
 
   const getNotificationIcon = (type: string) => {
     switch (type) {
-      case 'birthday':
+      case 'birthday_reminder':
         return <Cake color="primary" />;
-      case 'contact':
+      case 'contact_request':
+      case 'contact_deleted':
         return <PersonAdd color="success" />;
-      case 'wish':
+      case 'wish_reserved':
+      case 'wish_cancelled':
+      case 'wish_viewed':
+      case 'wish_deleted_by_contact':
+      case 'wish_added':
+      case 'wish_modified':
         return <CardGiftcard color="secondary" />;
+      case 'address_changed':
+      case 'account_deleted':
       default:
         return <Notifications color="action" />;
     }
   };
 
-  const formatTimestamp = (timestamp: Date) => {
+  const formatTimestamp = (timestamp: string) => {
     const now = new Date();
-    const diff = now.getTime() - timestamp.getTime();
+    const notificationDate = new Date(timestamp);
+    const diff = now.getTime() - notificationDate.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(hours / 24);
 
@@ -95,7 +103,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.read).length;
+  const unreadCount = notifications?.filter(n => !n.isRead).length || 0;
 
   return (
     <Drawer
@@ -125,7 +133,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Notifications color="primary" />
             <Typography variant="h6" sx={{ fontWeight: 600 }}>
-              Notificaciones
+              Avisos
             </Typography>
             {unreadCount > 0 && (
               <Chip
@@ -143,7 +151,18 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
 
         {/* Notifications List */}
         <Box sx={{ flex: 1, overflow: 'auto' }}>
-          {notifications.length === 0 ? (
+          {loading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', py: 4 }}>
+              <CircularProgress />
+              <Typography variant="body2" sx={{ ml: 2, color: colors.text.secondary }}>
+                Cargando avisos...
+              </Typography>
+            </Box>
+          ) : error ? (
+            <Box sx={{ textAlign: 'center', py: 4 }}>
+              <Typography variant="body1" color="error">{error}</Typography>
+            </Box>
+          ) : !notifications || notifications.length === 0 ? (
             <Box
               sx={{
                 p: 4,
@@ -153,21 +172,21 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
             >
               <Notifications sx={{ fontSize: 48, mb: 2, opacity: 0.5 }} />
               <Typography variant="body1">
-                No tienes notificaciones
+                No tienes avisos
               </Typography>
             </Box>
           ) : (
             <List sx={{ p: 0 }}>
-              {notifications.map((notification, index) => (
+              {notifications?.map((notification, index) => (
                 <React.Fragment key={notification.id}>
                   <ListItem
                     sx={{
                       py: 2,
                       px: 2,
-                      backgroundColor: notification.read 
+                      backgroundColor: notification.isRead 
                         ? 'transparent' 
                         : colors.background.secondary,
-                      borderLeft: notification.read 
+                      borderLeft: notification.isRead 
                         ? 'none' 
                         : `3px solid ${colors.primary[500]}`,
                       '&:hover': {
@@ -178,10 +197,10 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
                     <ListItemAvatar>
                       <Avatar
                         sx={{
-                          backgroundColor: notification.read 
+                          backgroundColor: notification.isRead 
                             ? colors.background.tertiary 
                             : colors.primary[200],
-                          color: notification.read 
+                          color: notification.isRead 
                             ? colors.text.tertiary 
                             : colors.primary[500],
                         }}
@@ -194,7 +213,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
                         <Typography
                           variant="subtitle2"
                           sx={{
-                            fontWeight: notification.read ? 400 : 600,
+                            fontWeight: notification.isRead ? 400 : 600,
                             color: colors.text.primary,
                           }}
                         >
@@ -212,20 +231,35 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
                           >
                             {notification.message}
                           </Typography>
-                          <Typography
-                            variant="caption"
-                            sx={{
-                              color: colors.text.tertiary,
-                              fontSize: '0.75rem',
-                            }}
-                          >
-                            {formatTimestamp(notification.timestamp)}
-                          </Typography>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: colors.text.tertiary,
+                                fontSize: '0.75rem',
+                              }}
+                            >
+                              {formatTimestamp(notification.createdAt)}
+                            </Typography>
+                            <Button
+                              startIcon={<DeleteIcon />}
+                              onClick={() => handleDeleteNotification(notification.id)}
+                              sx={{ 
+                                color: colors.error?.[600] || '#d32f2f', 
+                                fontSize: '0.75rem',
+                                minWidth: 'auto',
+                                p: 0.5
+                              }}
+                              size="small"
+                            >
+                              Descartar
+                            </Button>
+                          </Box>
                         </Box>
                       }
                     />
                   </ListItem>
-                  {index < notifications.length - 1 && (
+                  {index < (notifications?.length || 0) - 1 && (
                     <Divider sx={{ mx: 2 }} />
                   )}
                 </React.Fragment>
@@ -250,7 +284,7 @@ const NotificationsPanel: React.FC<NotificationsPanelProps> = ({ open, onClose }
               display: 'block',
             }}
           >
-            Las notificaciones también se envían a tu email
+            Los avisos también se envían a tu email
           </Typography>
         </Box>
       </Box>

@@ -6,7 +6,7 @@ import Wish from './Wish';
 interface NotificationAttributes {
   id: string;
   userId: string; // Usuario que recibe la notificación
-  type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder';
+  type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder' | 'contact_deleted' | 'wish_viewed' | 'wish_deleted_by_contact' | 'address_changed' | 'account_deleted' | 'wish_added' | 'wish_modified';
   title: string;
   message: string;
   isRead: boolean;
@@ -22,7 +22,7 @@ interface NotificationCreationAttributes extends Optional<NotificationAttributes
 class Notification extends Model<NotificationAttributes, NotificationCreationAttributes> implements NotificationAttributes {
   public id!: string;
   public userId!: string;
-  public type!: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder';
+  public type!: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder' | 'contact_deleted' | 'wish_viewed' | 'wish_deleted_by_contact' | 'address_changed' | 'account_deleted' | 'wish_added' | 'wish_modified';
   public title!: string;
   public message!: string;
   public isRead!: boolean;
@@ -54,7 +54,7 @@ Notification.init(
       },
     },
     type: {
-      type: DataTypes.ENUM('wish_reserved', 'wish_cancelled', 'contact_request', 'birthday_reminder'),
+      type: DataTypes.ENUM('wish_reserved', 'wish_cancelled', 'contact_request', 'birthday_reminder', 'contact_deleted', 'wish_viewed', 'wish_deleted_by_contact', 'address_changed', 'account_deleted', 'wish_added', 'wish_modified'),
       allowNull: false,
     },
     title: {
@@ -107,10 +107,7 @@ Notification.init(
   }
 );
 
-// Definir relaciones
-Notification.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-Notification.belongsTo(User, { foreignKey: 'relatedUserId', as: 'relatedUser' });
-Notification.belongsTo(Wish, { foreignKey: 'relatedWishId', as: 'relatedWish' });
+// Las relaciones se definen en models/index.ts para evitar conflictos
 
 export default Notification;
 

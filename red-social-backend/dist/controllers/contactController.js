@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.unblockContact = exports.getBlockedContacts = exports.blockAndRemoveContact = exports.searchUsersToAdd = exports.getSentInvitations = exports.getPendingRequests = exports.removeContact = exports.rejectContactRequest = exports.acceptContactRequest = exports.sendContactRequest = exports.getContactsByBirthday = exports.getContacts = void 0;
 const models_1 = require("../models");
 const sequelize_1 = require("sequelize");
+const contactManagementService_1 = require("../services/contactManagementService");
 const getContacts = async (req, res) => {
     try {
         const user = req.user;
@@ -255,49 +256,8 @@ const removeContact = async (req, res) => {
             userId: user.id,
             contactId: contactId
         });
-        const contact = await models_1.Contact.findOne({
-            where: {
-                id: contactId,
-                [sequelize_1.Op.or]: [
-                    { userId: user.id },
-                    { contactId: user.id }
-                ]
-            }
-        });
-        if (!contact) {
-            console.log('❌ Contacto no encontrado');
-            return res.status(404).json({
-                success: false,
-                message: 'Contacto no encontrado'
-            });
-        }
-        console.log('✅ Contacto encontrado:', {
-            id: contact.id,
-            userId: contact.userId,
-            contactId: contact.contactId
-        });
-        // Eliminar el contacto principal
-        await contact.destroy();
-        console.log('✅ Contacto principal eliminado');
-        // También eliminar el contacto recíproco si existe
-        const reciprocalContact = await models_1.Contact.findOne({
-            where: {
-                userId: contact.contactId,
-                contactId: user.id
-            }
-        });
-        if (reciprocalContact) {
-            console.log('✅ Contacto recíproco encontrado, eliminando:', {
-                id: reciprocalContact.id,
-                userId: reciprocalContact.userId,
-                contactId: reciprocalContact.contactId
-            });
-            await reciprocalContact.destroy();
-            console.log('✅ Contacto recíproco eliminado');
-        }
-        else {
-            console.log('⚠️ No se encontró contacto recíproco');
-        }
+        // Usar el servicio centralizado para manejar la eliminación
+        await contactManagementService_1.ContactManagementService.deleteContact(user.id, contactId);
         res.json({
             success: true,
             message: 'Contacto eliminado exitosamente'
@@ -307,7 +267,7 @@ const removeContact = async (req, res) => {
         console.error('Error al eliminar contacto:', error);
         res.status(500).json({
             success: false,
-            message: 'Error interno del servidor'
+            message: error instanceof Error ? error.message : 'Error interno del servidor'
         });
     }
 };

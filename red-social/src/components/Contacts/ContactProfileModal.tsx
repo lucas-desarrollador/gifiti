@@ -75,6 +75,7 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
   const loadContactProfile = async () => {
     if (!contactId || !state.token) return;
 
+    console.log('🔍 ContactProfileModal - Cargando perfil:', { contactId });
     setLoading(true);
     setError('');
 
@@ -89,7 +90,11 @@ const ContactProfileModal: React.FC<ContactProfileModalProps> = ({
         }
       );
 
+      console.log('📡 ContactProfileModal - Respuesta:', { status: response.status, ok: response.ok });
+
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ ContactProfileModal - Error:', errorText);
         throw new Error('Error al cargar el perfil del contacto');
       }
 

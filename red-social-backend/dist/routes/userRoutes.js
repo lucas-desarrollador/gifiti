@@ -12,6 +12,7 @@ router.use(auth_1.authenticateToken);
 // Rutas de perfil
 router.get('/profile', userController_1.getProfile);
 router.put('/profile', userController_1.uploadProfileImage, userController_1.updateProfile);
+router.delete('/account', userController_1.deleteAccount);
 // Rutas de usuarios
 router.get('/:userId', userController_1.getUserById);
 router.get('/search', userController_1.searchUsers);

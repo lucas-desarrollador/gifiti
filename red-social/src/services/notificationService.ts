@@ -3,7 +3,7 @@ import api, { handleApiResponse, handleApiError } from './api';
 export interface Notification {
   id: string;
   userId: string;
-  type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder';
+  type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder' | 'contact_deleted' | 'wish_viewed' | 'wish_deleted_by_contact' | 'address_changed' | 'account_deleted' | 'wish_added' | 'wish_modified';
   title: string;
   message: string;
   isRead: boolean;
@@ -81,6 +81,18 @@ export class NotificationService {
   static async deleteNotification(notificationId: string): Promise<void> {
     try {
       await api.delete<{ success: boolean }>(`/notifications/${notificationId}`);
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
+
+  // Obtener avisos del usuario
+  static async getAvisos(page: number = 1, limit: number = 20): Promise<PaginatedNotifications> {
+    try {
+      const response = await api.get<{ success: boolean; data: PaginatedNotifications }>(
+        `/notifications/avisos?page=${page}&limit=${limit}`
+      );
+      return handleApiResponse(response);
     } catch (error) {
       throw new Error(handleApiError(error as any));
     }

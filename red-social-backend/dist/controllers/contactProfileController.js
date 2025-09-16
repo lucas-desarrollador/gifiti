@@ -2,17 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getContactWishes = exports.getContactProfile = void 0;
 const models_1 = require("../models");
+const sequelize_1 = require("sequelize");
 const dateUtils_1 = require("../utils/dateUtils");
 const getContactProfile = async (req, res) => {
     try {
         const user = req.user;
         const { contactId } = req.params;
-        // Verificar que el contacto existe y está aceptado
+        // Verificar que el contacto existe y está aceptado (búsqueda bidireccional)
         const contact = await models_1.Contact.findOne({
             where: {
-                userId: user.id,
-                contactId: contactId,
-                status: 'accepted'
+                [sequelize_1.Op.or]: [
+                    { userId: user.id, contactId: contactId, status: 'accepted' },
+                    { userId: contactId, contactId: user.id, status: 'accepted' }
+                ]
             },
             include: [
                 {
@@ -35,7 +37,8 @@ const getContactProfile = async (req, res) => {
                 message: 'Contacto no encontrado'
             });
         }
-        const contactUser = contact.contact;
+        // Determinar cuál es el usuario del contacto (el que no es el usuario actual)
+        const contactUser = contact.userId === user.id ? contact.contact : contact.user;
         if (!contactUser) {
             return res.status(404).json({
                 success: false,
@@ -134,12 +137,13 @@ const getContactWishes = async (req, res) => {
     try {
         const user = req.user;
         const { contactId } = req.params;
-        // Verificar que el contacto existe y está aceptado
+        // Verificar que el contacto existe y está aceptado (búsqueda bidireccional)
         const contact = await models_1.Contact.findOne({
             where: {
-                userId: user.id,
-                contactId: contactId,
-                status: 'accepted'
+                [sequelize_1.Op.or]: [
+                    { userId: user.id, contactId: contactId, status: 'accepted' },
+                    { userId: contactId, contactId: user.id, status: 'accepted' }
+                ]
             },
             include: [
                 {

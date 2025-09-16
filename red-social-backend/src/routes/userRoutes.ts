@@ -6,7 +6,8 @@ import {
   searchUsers,
   uploadProfileImage,
   checkUserExists,
-  getUserCount
+  getUserCount,
+  deleteAccount
 } from '../controllers/userController';
 import { authenticateToken } from '../middleware/auth';
 
@@ -22,6 +23,7 @@ router.use(authenticateToken);
 // Rutas de perfil
 router.get('/profile', getProfile);
 router.put('/profile', uploadProfileImage, updateProfile);
+router.delete('/account', deleteAccount);
 
 // Rutas de usuarios
 router.get('/:userId', getUserById);

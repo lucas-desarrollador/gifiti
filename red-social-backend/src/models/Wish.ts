@@ -110,8 +110,6 @@ Wish.init(
   }
 );
 
-// Definir relaciones
-Wish.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-Wish.belongsTo(User, { foreignKey: 'reservedBy', as: 'reservedByUser' });
+// Las relaciones se definen en models/index.ts para evitar conflictos
 
 export default Wish;

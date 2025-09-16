@@ -6,6 +6,7 @@ import {
   deleteNotification,
   getUnreadNotificationCount,
   cleanupExampleNotifications,
+  getUserAvisos,
 } from '../controllers/notificationController';
 import { authenticateToken } from '../middleware/auth';
 
@@ -16,6 +17,9 @@ router.use(authenticateToken);
 
 // Obtener notificaciones del usuario
 router.get('/', getUserNotifications);
+
+// Obtener avisos del usuario
+router.get('/avisos', getUserAvisos);
 
 // Obtener contador de notificaciones no leídas
 router.get('/count', getUnreadNotificationCount);

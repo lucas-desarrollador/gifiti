@@ -4,6 +4,7 @@ import { User } from '../models';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { ContactManagementService } from '../services/contactManagementService';
 
 // Configurar multer para subir archivos
 const storage = multer.diskStorage({
@@ -254,6 +255,29 @@ export const getUserCount = async (req: Request, res: Response) => {
     res.status(500).json({ 
       success: false,
       message: 'Error interno del servidor' 
+    });
+  }
+};
+
+// Eliminar cuenta de usuario
+export const deleteAccount = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+
+    console.log('🔍 Eliminando cuenta de usuario:', user.id);
+
+    // Usar el servicio centralizado para manejar la eliminación de cuenta
+    await ContactManagementService.handleAccountDeletion(user.id);
+
+    res.json({
+      success: true,
+      message: 'Cuenta eliminada exitosamente'
+    });
+  } catch (error) {
+    console.error('Error al eliminar cuenta:', error);
+    res.status(500).json({
+      success: false,
+      message: error instanceof Error ? error.message : 'Error interno del servidor'
     });
   }
 };

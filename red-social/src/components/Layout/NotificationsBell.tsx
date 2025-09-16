@@ -209,7 +209,7 @@ const NotificationsBell: React.FC = () => {
         <Box sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6" sx={{ color: colors.text.primary, fontWeight: 600 }}>
-              Notificaciones
+              Avisos
             </Typography>
             <IconButton
               onClick={() => setIsDrawerOpen(false)}

@@ -12,6 +12,19 @@ User.hasMany(Wish, { foreignKey: 'userId', as: 'wishes' });
 User.hasMany(Contact, { foreignKey: 'userId', as: 'contacts' });
 User.hasMany(Contact, { foreignKey: 'contactId', as: 'contactRequests' });
 
+// Relaciones para Contact
+Contact.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Contact.belongsTo(User, { foreignKey: 'contactId', as: 'contact' });
+
+// Relaciones para Wish
+Wish.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Wish.belongsTo(User, { foreignKey: 'reservedBy', as: 'reservedByUser' });
+
+// Relaciones para Notification
+Notification.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+Notification.belongsTo(User, { foreignKey: 'relatedUserId', as: 'relatedUser' });
+Notification.belongsTo(Wish, { foreignKey: 'relatedWishId', as: 'relatedWish' });
+
 // Relaciones para votos de reputación
 User.hasMany(ReputationVote, { foreignKey: 'fromUserId', as: 'votesGiven' });
 User.hasMany(ReputationVote, { foreignKey: 'toUserId', as: 'votesReceived' });
@@ -26,7 +39,7 @@ User.hasMany(BirthdayNotification, { foreignKey: 'userId', as: 'birthdayNotifica
 
 // Relaciones para configuraciones de privacidad
 User.hasOne(PrivacySettings, { foreignKey: 'userId', as: 'privacySettings' });
-PrivacySettings.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+PrivacySettings.belongsTo(User, { foreignKey: 'userId', as: 'privacyUser' });
 
 // Sincronizar la base de datos
 const syncDatabase = async () => {

@@ -139,32 +139,19 @@ export class WishService {
 
   // Explorar deseos (para la sección explore)
   static async exploreWishes(
-    filters?: {
-      tags?: string[];
-      location?: string;
-      sortBy?: 'recent' | 'popular' | 'distance';
-    },
     page: number = 1,
     limit: number = 20
   ): Promise<PaginatedResponse<Wish>> {
     try {
-      let url = `/wishes/explore?page=${page}&limit=${limit}`;
+      console.log('🔍 Explorando deseos:', { page, limit });
       
-      if (filters?.tags && filters.tags.length > 0) {
-        url += `&tags=${filters.tags.join(',')}`;
-      }
-      
-      if (filters?.location) {
-        url += `&location=${encodeURIComponent(filters.location)}`;
-      }
-      
-      if (filters?.sortBy) {
-        url += `&sortBy=${filters.sortBy}`;
-      }
-
+      const url = `/wishes/explore?page=${page}&limit=${limit}`;
       const response = await api.get<{ success: boolean; data: PaginatedResponse<Wish> }>(url);
+      
+      console.log('✅ Deseos explorados:', response.data);
       return handleApiResponse(response);
     } catch (error) {
+      console.error('❌ Error al explorar deseos:', error);
       throw new Error(handleApiError(error as any));
     }
   }

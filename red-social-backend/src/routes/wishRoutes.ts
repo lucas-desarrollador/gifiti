@@ -23,6 +23,9 @@ router.get('/', getUserWishes);
 router.post('/', uploadWishImage, addWish);
 router.put('/reorder', reorderWishes);
 
+// Rutas de exploración (deben ir antes que las rutas con parámetros)
+router.get('/explore', exploreWishes);
+
 // Rutas de deseos específicos
 router.get('/:wishId', getUserWishesById);
 router.put('/:wishId', uploadWishImage, updateWish);
@@ -31,9 +34,6 @@ router.delete('/:wishId', deleteWish);
 // Rutas de reserva
 router.post('/:wishId/reserve', reserveWish);
 router.delete('/:wishId/reserve', cancelReservation);
-
-// Rutas de exploración
-router.get('/explore', exploreWishes);
 
 // Rutas de deseos de otros usuarios
 router.get('/user/:userId', getUserWishesById);

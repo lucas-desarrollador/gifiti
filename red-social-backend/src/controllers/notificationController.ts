@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { Notification, User, Wish } from '../models';
+import { Op } from 'sequelize';
 
 // Obtener notificaciones del usuario actual
 export const getUserNotifications = async (req: Request, res: Response) => {
@@ -238,6 +239,81 @@ export const cleanupExampleNotifications = async (req: Request, res: Response) =
     });
   } catch (error) {
     console.error('Error al limpiar notificaciones de ejemplo:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error interno del servidor',
+    });
+  }
+};
+
+// Obtener avisos del usuario actual (excluyendo notificaciones de reservas de deseos)
+export const getUserAvisos = async (req: Request, res: Response) => {
+  try {
+    const user = (req as any).user;
+    const { page = 1, limit = 20 } = req.query;
+
+    const offset = (Number(page) - 1) * Number(limit);
+
+    // Tipos de avisos (excluyendo wish_reserved y wish_cancelled)
+    const avisoTypes = [
+      'contact_deleted',
+      'wish_viewed', 
+      'wish_deleted_by_contact',
+      'address_changed',
+      'account_deleted',
+      'wish_added',
+      'wish_modified',
+      'contact_request',
+      'birthday_reminder'
+    ];
+
+    const { count, rows } = await Notification.findAndCountAll({
+      where: { 
+        userId: user.id,
+        type: {
+          [Op.in]: avisoTypes
+        }
+      },
+      include: [
+        {
+          model: User,
+          as: 'relatedUser',
+          attributes: ['id', 'nickname', 'realName', 'profileImage'],
+        },
+        {
+          model: Wish,
+          as: 'relatedWish',
+          attributes: ['id', 'title', 'image'],
+        },
+      ],
+      order: [['createdAt', 'DESC']],
+      limit: Number(limit),
+      offset,
+    });
+
+    const unreadCount = await Notification.count({
+      where: { 
+        userId: user.id,
+        isRead: false,
+        type: {
+          [Op.in]: avisoTypes
+        }
+      },
+    });
+
+    res.json({
+      success: true,
+      data: {
+        avisos: rows,
+        total: count,
+        unreadCount,
+        page: Number(page),
+        limit: Number(limit),
+        totalPages: Math.ceil(count / Number(limit)),
+      },
+    });
+  } catch (error) {
+    console.error('Error al obtener avisos:', error);
     res.status(500).json({
       success: false,
       message: 'Error interno del servidor',

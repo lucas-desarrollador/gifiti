@@ -125,6 +125,28 @@ const ContactsPage: React.FC = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // Listener para cuando se envía una invitación desde el explorador
+    const handleContactInvitationSent = (event: CustomEvent) => {
+      console.log('📨 Invitación enviada desde explorador:', event.detail);
+      
+      // Recargar las invitaciones enviadas
+      loadSentInvitations();
+      
+      // Cambiar a la pestaña de "Contactos Invitados" si no está ya ahí
+      if (activeTab !== 2) {
+        setActiveTab(2);
+      }
+    };
+
+    // Escuchar el evento personalizado
+    window.addEventListener('contactInvitationSent', handleContactInvitationSent as EventListener);
+
+    return () => {
+      window.removeEventListener('contactInvitationSent', handleContactInvitationSent as EventListener);
+    };
+  }, [activeTab]);
+
   const loadContacts = async () => {
     try {
       setIsLoading(true);
@@ -260,6 +282,7 @@ const ContactsPage: React.FC = () => {
 
   // Funciones para manejar los modales
   const handleContactProfileClick = (contactId: string, contactName: string) => {
+    console.log('🔍 ContactsPage - Abriendo perfil:', { contactId, contactName });
     setSelectedContactId(contactId);
     setSelectedContactName(contactName);
     setIsProfileModalOpen(true);

@@ -83,8 +83,6 @@ Contact.init(
   }
 );
 
-// Definir relaciones
-Contact.belongsTo(User, { foreignKey: 'userId', as: 'user' });
-Contact.belongsTo(User, { foreignKey: 'contactId', as: 'contact' });
+// Las relaciones se definen en models/index.ts para evitar conflictos
 
 export default Contact;

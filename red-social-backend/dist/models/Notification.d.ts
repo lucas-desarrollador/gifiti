@@ -4,7 +4,7 @@ import Wish from './Wish';
 interface NotificationAttributes {
     id: string;
     userId: string;
-    type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder';
+    type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder' | 'contact_deleted' | 'wish_viewed' | 'wish_deleted_by_contact' | 'address_changed' | 'account_deleted' | 'wish_added' | 'wish_modified';
     title: string;
     message: string;
     isRead: boolean;
@@ -19,7 +19,7 @@ interface NotificationCreationAttributes extends Optional<NotificationAttributes
 declare class Notification extends Model<NotificationAttributes, NotificationCreationAttributes> implements NotificationAttributes {
     id: string;
     userId: string;
-    type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder';
+    type: 'wish_reserved' | 'wish_cancelled' | 'contact_request' | 'birthday_reminder' | 'contact_deleted' | 'wish_viewed' | 'wish_deleted_by_contact' | 'address_changed' | 'account_deleted' | 'wish_added' | 'wish_modified';
     title: string;
     message: string;
     isRead: boolean;

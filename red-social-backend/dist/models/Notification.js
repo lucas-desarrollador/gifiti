@@ -24,7 +24,7 @@ Notification.init({
         },
     },
     type: {
-        type: sequelize_1.DataTypes.ENUM('wish_reserved', 'wish_cancelled', 'contact_request', 'birthday_reminder'),
+        type: sequelize_1.DataTypes.ENUM('wish_reserved', 'wish_cancelled', 'contact_request', 'birthday_reminder', 'contact_deleted', 'wish_viewed', 'wish_deleted_by_contact', 'address_changed', 'account_deleted', 'wish_added', 'wish_modified'),
         allowNull: false,
     },
     title: {

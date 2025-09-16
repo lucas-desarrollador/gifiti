@@ -3,12 +3,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserCount = exports.searchUsers = exports.getUserById = exports.updateProfile = exports.getProfile = exports.checkUserExists = exports.uploadProfileImage = void 0;
+exports.deleteAccount = exports.getUserCount = exports.searchUsers = exports.getUserById = exports.updateProfile = exports.getProfile = exports.checkUserExists = exports.uploadProfileImage = void 0;
 const sequelize_1 = require("sequelize");
 const models_1 = require("../models");
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const contactManagementService_1 = require("../services/contactManagementService");
 // Configurar multer para subir archivos
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
@@ -255,4 +256,25 @@ const getUserCount = async (req, res) => {
     }
 };
 exports.getUserCount = getUserCount;
+// Eliminar cuenta de usuario
+const deleteAccount = async (req, res) => {
+    try {
+        const user = req.user;
+        console.log('🔍 Eliminando cuenta de usuario:', user.id);
+        // Usar el servicio centralizado para manejar la eliminación de cuenta
+        await contactManagementService_1.ContactManagementService.handleAccountDeletion(user.id);
+        res.json({
+            success: true,
+            message: 'Cuenta eliminada exitosamente'
+        });
+    }
+    catch (error) {
+        console.error('Error al eliminar cuenta:', error);
+        res.status(500).json({
+            success: false,
+            message: error instanceof Error ? error.message : 'Error interno del servidor'
+        });
+    }
+};
+exports.deleteAccount = deleteAccount;
 //# sourceMappingURL=userController.js.map

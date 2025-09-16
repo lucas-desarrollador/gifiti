@@ -8,6 +8,8 @@ const router = (0, express_1.Router)();
 router.use(auth_1.authenticateToken);
 // Obtener notificaciones del usuario
 router.get('/', notificationController_1.getUserNotifications);
+// Obtener avisos del usuario
+router.get('/avisos', notificationController_1.getUserAvisos);
 // Obtener contador de notificaciones no leídas
 router.get('/count', notificationController_1.getUnreadNotificationCount);
 // Marcar notificación como leída
