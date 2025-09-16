@@ -2,7 +2,6 @@ import { Router } from 'express';
 import {
   getUserNotifications,
   markNotificationAsRead,
-  markAllNotificationsAsRead,
   deleteNotification,
   getUnreadNotificationCount,
   cleanupExampleNotifications,
@@ -27,8 +26,6 @@ router.get('/count', getUnreadNotificationCount);
 // Marcar notificación como leída
 router.put('/:notificationId/read', markNotificationAsRead);
 
-// Marcar todas las notificaciones como leídas
-router.put('/read-all', markAllNotificationsAsRead);
 
 // Eliminar notificación (IGNORAR)
 router.delete('/:notificationId', deleteNotification);

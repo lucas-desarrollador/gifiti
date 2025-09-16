@@ -49,9 +49,15 @@ export class NotificationService {
   // Obtener contador de notificaciones no leídas
   static async getUnreadCount(): Promise<{ count: number }> {
     try {
+      console.log('🔔 NotificationService - Obteniendo contador de notificaciones...');
       const response = await api.get<{ success: boolean; data: { count: number } }>('/notifications/count');
-      return handleApiResponse(response);
+      const result = handleApiResponse(response);
+      console.log('🔔 NotificationService - Contador obtenido:', result);
+      console.log('🔔 NotificationService - Tipo de resultado:', typeof result);
+      console.log('🔔 NotificationService - Resultado completo:', JSON.stringify(result, null, 2));
+      return result;
     } catch (error) {
+      console.error('🔔 NotificationService - Error al obtener contador:', error);
       throw new Error(handleApiError(error as any));
     }
   }

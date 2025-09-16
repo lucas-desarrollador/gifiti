@@ -44,7 +44,7 @@ export const getBirthdayNotifications = async (req: Request, res: Response) => {
           contactImage: contact.contact.profileImage,
           birthdayDate: contact.contact.birthDate,
           daysUntil: daysUntilBirthday,
-          read: false, // Por ahora siempre false, en el futuro se puede implementar persistencia
+          read: false, // Se implementará persistencia en el futuro
           createdAt: new Date().toISOString(),
         });
       }

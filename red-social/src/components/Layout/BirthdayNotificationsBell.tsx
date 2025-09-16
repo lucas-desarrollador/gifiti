@@ -43,23 +43,29 @@ interface BirthdayNotificationsBellProps {
 }
 
 const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () => {
+  console.log('🎂 BirthdayNotificationsBell - Componente montado');
+  
   const { state } = useAuth();
   const [open, setOpen] = useState(false);
   const [notifications, setNotifications] = useState<BirthdayNotification[]>([]);
   const [loading, setLoading] = useState(false);
   const [markingAsRead, setMarkingAsRead] = useState<string | null>(null);
   const [error, setError] = useState<string>('');
+  const [hasLoaded, setHasLoaded] = useState(false);
 
 
   // Cargar notificaciones de cumpleaños
   const loadBirthdayNotifications = async () => {
     try {
+      console.log('🎂 Cargando notificaciones de cumpleaños...');
       setLoading(true);
       setError('');
       
       // Obtener la configuración de días de anticipación del usuario
       const savedAnticipation = localStorage.getItem(`anticipation_${state.user?.id}`);
       const daysAhead = savedAnticipation ? parseInt(savedAnticipation) : 30; // Por defecto 30 días
+      
+      console.log('🎂 Días de anticipación:', daysAhead);
       
       const response = await fetch(`http://localhost:3001/api/birthday-notifications?daysAhead=${daysAhead}`, {
         headers: {
@@ -73,12 +79,26 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
 
       const data = await response.json();
       
+      console.log('🎂 Respuesta del servidor:', data);
+      
       if (data.success) {
-        setNotifications(data.data);
+        // Obtener notificaciones marcadas como leídas del localStorage
+        const readNotifications = JSON.parse(localStorage.getItem(`readBirthdayNotifications_${state.user?.id}`) || '[]');
+        
+        // Marcar como leídas las notificaciones que están en localStorage
+        const notificationsWithReadStatus = data.data.map((notification: any) => ({
+          ...notification,
+          read: readNotifications.includes(notification.id)
+        }));
+        
+        setNotifications(notificationsWithReadStatus);
+        setHasLoaded(true);
+        console.log('🎂 Notificaciones cargadas:', notificationsWithReadStatus.length);
       } else {
         throw new Error(data.message || 'Error al cargar notificaciones');
       }
     } catch (err) {
+      console.error('🎂 Error al cargar notificaciones:', err);
       setError(err instanceof Error ? err.message : 'Error al cargar notificaciones');
     } finally {
       setLoading(false);
@@ -88,17 +108,16 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
   // Marcar notificación como leída
   const markAsRead = async (notificationId: string) => {
     try {
+      console.log('🎂 BirthdayNotificationsBell - Marcando como leída:', notificationId);
       setMarkingAsRead(notificationId);
       
-      const response = await fetch(`http://localhost:3001/api/birthday-notifications/${notificationId}/read`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${state.token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al marcar notificación como leída');
+      // Obtener notificaciones marcadas como leídas del localStorage
+      const readNotifications = JSON.parse(localStorage.getItem(`readBirthdayNotifications_${state.user?.id}`) || '[]');
+      
+      // Agregar esta notificación a la lista de leídas
+      if (!readNotifications.includes(notificationId)) {
+        readNotifications.push(notificationId);
+        localStorage.setItem(`readBirthdayNotifications_${state.user?.id}`, JSON.stringify(readNotifications));
       }
 
       // Actualizar estado local
@@ -110,9 +129,12 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
         )
       );
       
-      // Actualizar contador de no leídas
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      console.log('🎂 BirthdayNotificationsBell - Estado actualizado correctamente');
+      
+      // Limpiar cualquier error previo
+      setError('');
     } catch (err) {
+      console.error('🎂 BirthdayNotificationsBell - Error al marcar como leída:', err);
       setError(err instanceof Error ? err.message : 'Error al marcar como leída');
     } finally {
       setMarkingAsRead(null);
@@ -124,16 +146,12 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
     try {
       setMarkingAsRead(notificationId);
       
-      const response = await fetch(`http://localhost:3001/api/birthday-notifications/${notificationId}/unread`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${state.token}`,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Error al revertir notificación');
-      }
+      // Obtener notificaciones marcadas como leídas del localStorage
+      const readNotifications = JSON.parse(localStorage.getItem(`readBirthdayNotifications_${state.user?.id}`) || '[]');
+      
+      // Remover esta notificación de la lista de leídas
+      const updatedReadNotifications = readNotifications.filter((id: string) => id !== notificationId);
+      localStorage.setItem(`readBirthdayNotifications_${state.user?.id}`, JSON.stringify(updatedReadNotifications));
 
       // Actualizar estado local
       setNotifications(prev => 
@@ -144,8 +162,7 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
         )
       );
       
-      // Actualizar contador de no leídas
-      setUnreadCount(prev => prev + 1);
+      // El contador se actualiza automáticamente con el filtro de unreadCount
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al revertir notificación');
     } finally {
@@ -153,62 +170,49 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
     }
   };
 
-  // Marcar todas como leídas
-  const markAllAsRead = async () => {
-    try {
-      const response = await fetch('http://localhost:3001/api/birthday-notifications/mark-all-read', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${state.token}`,
-        },
-      });
 
-      if (!response.ok) {
-        throw new Error('Error al marcar todas las notificaciones como leídas');
-      }
+  // Contar notificaciones no leídas (solo si se han cargado las notificaciones)
+  const unreadCount = hasLoaded ? notifications.filter(n => !n.read).length : 0;
+  
+  // Debug: Log para ver qué está pasando
+  console.log('🎂 BirthdayNotificationsBell - Estado:', {
+    hasLoaded,
+    notificationsCount: notifications.length,
+    unreadCount,
+    open,
+    notifications: notifications.map(n => ({ id: n.id, read: n.read, contactName: n.contactName }))
+  });
 
-      // Actualizar estado local
-      setNotifications(prev => 
-        prev.map(notif => ({ ...notif, read: true }))
-      );
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al marcar todas como leídas');
+  // Cargar notificaciones al montar el componente (solo una vez)
+  useEffect(() => {
+    if (state.user?.id && !hasLoaded) {
+      loadBirthdayNotifications();
     }
-  };
+  }, [state.user?.id, hasLoaded]);
 
-  // Contar notificaciones no leídas
-  const unreadCount = notifications.filter(n => !n.read).length;
-
-  // Cargar notificaciones cuando se abre el panel
+  // Recargar notificaciones cuando se abre el panel
   useEffect(() => {
     if (open) {
       loadBirthdayNotifications();
     }
-  }, [open]);
+  }, [open]); // Recargar cuando cambie el usuario o se abra el panel
 
-  // Recargar notificaciones cuando cambie la configuración del usuario
-  useEffect(() => {
-    if (open) {
-      loadBirthdayNotifications();
-    }
-  }, [state.user?.id]); // Recargar cuando cambie el usuario
+  // Solo cargar notificaciones cuando se abra el panel para evitar contadores incorrectos
+  // useEffect(() => {
+  //   loadBirthdayNotifications();
+  // }, []);
 
-  // Cargar notificaciones al montar el componente
-  useEffect(() => {
-    loadBirthdayNotifications();
-  }, []);
-
-  // Escuchar cambios en localStorage para recargar notificaciones
+  // Escuchar cambios en localStorage para recargar notificaciones (solo si el panel está abierto)
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === `anticipation_${state.user?.id}` && e.newValue) {
+      if (e.key === `anticipation_${state.user?.id}` && e.newValue && open) {
         loadBirthdayNotifications();
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, [state.user?.id]);
+  }, [state.user?.id, open]);
 
   return (
     <>
@@ -223,7 +227,7 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
         }}
       >
         <Badge
-          badgeContent={unreadCount}
+          badgeContent={unreadCount > 0 ? unreadCount : null}
           color="error"
           sx={{
             '& .MuiBadge-badge': {
@@ -236,7 +240,7 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
             },
           }}
         >
-          <BellIcon />
+          <CakeIcon />
         </Badge>
       </IconButton>
 
@@ -287,27 +291,6 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
             </Alert>
           )}
 
-          {/* Botón marcar todas como leídas */}
-          {unreadCount > 0 && (
-            <Box sx={{ mb: 2 }}>
-              <Button
-                variant="outlined"
-                size="small"
-                startIcon={<MarkReadIcon />}
-                onClick={markAllAsRead}
-                sx={{
-                  borderColor: colors.primary[500],
-                  color: colors.primary[500],
-                  '&:hover': {
-                    borderColor: colors.primary[600],
-                    backgroundColor: colors.primary[50],
-                  },
-                }}
-              >
-                Marcar todas como leídas
-              </Button>
-            </Box>
-          )}
 
           {/* Loading */}
           {loading && (
@@ -422,11 +405,11 @@ const BirthdayNotificationsBell: React.FC<BirthdayNotificationsBellProps> = () =
                           onClick={() => markAsUnread(notification.id)}
                           disabled={markingAsRead === notification.id}
                           sx={{
-                            borderColor: colors.secondary[500],
-                            color: colors.secondary[500],
+                            borderColor: colors.primary[500],
+                            color: colors.primary[500],
                             '&:hover': {
-                              borderColor: colors.secondary[600],
-                              backgroundColor: colors.secondary[50],
+                              borderColor: colors.primary[600],
+                              backgroundColor: colors.primary[50],
                             },
                             minWidth: 'auto',
                             px: 2,

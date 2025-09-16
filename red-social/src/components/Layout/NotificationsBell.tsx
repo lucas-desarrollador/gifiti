@@ -34,6 +34,8 @@ import { NotificationService, Notification } from '../../services/notificationSe
 // Solo manejar notificaciones de reservas, no cumpleaños
 
 const NotificationsBell: React.FC = () => {
+  console.log('🔔 NotificationsBell - Componente montado');
+  
   const { state } = useAuth();
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -48,6 +50,7 @@ const NotificationsBell: React.FC = () => {
   const loadNotifications = async () => {
     if (!state.user) return;
     
+    console.log('🔔 NotificationsBell - Cargando notificaciones...');
     setLoading(true);
     setError('');
     
@@ -58,7 +61,15 @@ const NotificationsBell: React.FC = () => {
       
       // Cargar contador de no leídas
       const countData = await NotificationService.getUnreadCount();
+      console.log('🔔 NotificationsBell - countData recibido:', countData);
+      console.log('🔔 NotificationsBell - countData.count:', countData.count);
+      console.log('🔔 NotificationsBell - typeof countData.count:', typeof countData.count);
       setUnreadCount(countData.count);
+      
+      console.log('🔔 NotificationsBell - Notificaciones cargadas:', {
+        notificationsCount: notificationsData.notifications.length,
+        unreadCount: countData.count
+      });
     } catch (err) {
       console.error('Error al cargar notificaciones:', err);
       setError('Error al cargar notificaciones');
@@ -85,7 +96,6 @@ const NotificationsBell: React.FC = () => {
           notif.id === notificationId ? { ...notif, isRead: true } : notif
         )
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       console.error('Error al marcar como leída:', err);
     }
@@ -105,11 +115,11 @@ const NotificationsBell: React.FC = () => {
             : notif
         )
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (err) {
       console.error('Error al ignorar notificación:', err);
     }
   };
+
 
 
   const handleDelete = async (notificationId: string) => {
@@ -118,7 +128,6 @@ const NotificationsBell: React.FC = () => {
       
       // Actualizar estado local
       setNotifications(prev => prev.filter(n => n.id !== notificationId));
-      setUnreadCount(prev => Math.max(0, prev - 1));
     } catch (error) {
       console.error('Error al eliminar notificación:', error);
     }
@@ -177,7 +186,8 @@ const NotificationsBell: React.FC = () => {
     .filter(notif => notif.type === 'wish_reserved' || notif.type === 'wish_cancelled')
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-  const totalUnreadCount = unreadCount;
+  // Contar solo las notificaciones que se van a mostrar (wish_reserved y wish_cancelled)
+  const totalUnreadCount = allNotifications.filter(notif => !notif.isRead).length;
 
   return (
     <>
@@ -190,7 +200,20 @@ const NotificationsBell: React.FC = () => {
           },
         }}
       >
-        <Badge badgeContent={totalUnreadCount} color="error">
+        <Badge 
+          badgeContent={totalUnreadCount > 0 ? totalUnreadCount : null} 
+          color="error"
+          sx={{
+            '& .MuiBadge-badge': {
+              backgroundColor: colors.status.error,
+              color: 'white',
+              fontSize: '0.75rem',
+              fontWeight: 600,
+              minWidth: '18px',
+              height: '18px',
+            },
+          }}
+        >
           <GiftIcon />
         </Badge>
       </IconButton>
@@ -209,7 +232,7 @@ const NotificationsBell: React.FC = () => {
         <Box sx={{ p: 2 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
             <Typography variant="h6" sx={{ color: colors.text.primary, fontWeight: 600 }}>
-              Avisos
+              Notificaciones
             </Typography>
             <IconButton
               onClick={() => setIsDrawerOpen(false)}
@@ -219,6 +242,7 @@ const NotificationsBell: React.FC = () => {
               <CloseIcon />
             </IconButton>
           </Box>
+
 
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>

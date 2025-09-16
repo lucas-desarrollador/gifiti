@@ -81,28 +81,6 @@ export const markNotificationAsRead = async (req: Request, res: Response) => {
   }
 };
 
-// Marcar todas las notificaciones como leídas
-export const markAllNotificationsAsRead = async (req: Request, res: Response) => {
-  try {
-    const user = (req as any).user;
-
-    await Notification.update(
-      { isRead: true },
-      { where: { userId: user.id, isRead: false } }
-    );
-
-    res.json({
-      success: true,
-      message: 'Todas las notificaciones marcadas como leídas',
-    });
-  } catch (error) {
-    console.error('Error al marcar todas las notificaciones como leídas:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Error interno del servidor',
-    });
-  }
-};
 
 // Eliminar notificación (IGNORAR)
 export const deleteNotification = async (req: Request, res: Response) => {
@@ -157,6 +135,7 @@ export const getUnreadNotificationCount = async (req: Request, res: Response) =>
     });
   }
 };
+
 
 // Función auxiliar para crear notificación de reserva
 export const createWishReservedNotification = async (
