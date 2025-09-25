@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../config/database"));
-const User_1 = __importDefault(require("./User"));
 class Wish extends sequelize_1.Model {
 }
 Wish.init({
@@ -79,8 +78,6 @@ Wish.init({
     tableName: 'wishes',
     timestamps: true,
 });
-// Definir relaciones
-Wish.belongsTo(User_1.default, { foreignKey: 'userId', as: 'user' });
-Wish.belongsTo(User_1.default, { foreignKey: 'reservedBy', as: 'reservedByUser' });
+// Las relaciones se definen en models/index.ts para evitar conflictos
 exports.default = Wish;
 //# sourceMappingURL=Wish.js.map

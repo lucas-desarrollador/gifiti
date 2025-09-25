@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from '@mui/icons-material';
 import { colors } from '../../theme';
+import { UserService } from '../../services/userService';
 
 interface UserCounterProps {
   className?: string;
@@ -25,23 +26,16 @@ const UserCounter: React.FC<UserCounterProps> = ({ className }) => {
       try {
         setIsLoading(true);
         
-        const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/users/count`);
-        const data = await response.json();
+        const data = await UserService.getUserCount();
+        const newCount = data.count;
         
-        if (data.success) {
-          const newCount = data.data.count;
-          
-          // Mostrar animación si el número aumentó
-          if (userCount !== null && newCount > userCount) {
-            setIsGrowing(true);
-            setTimeout(() => setIsGrowing(false), 2000);
-          }
-          
-          setUserCount(newCount);
-        } else {
-          console.error('Error en respuesta de API:', data.message);
-          setUserCount(0);
+        // Mostrar animación si el número aumentó
+        if (userCount !== null && newCount > userCount) {
+          setIsGrowing(true);
+          setTimeout(() => setIsGrowing(false), 2000);
         }
+        
+        setUserCount(newCount);
         
       } catch (error) {
         console.error('Error al cargar contador de usuarios:', error);

@@ -148,4 +148,14 @@ export class UserService {
       throw new Error(handleApiError(error as any));
     }
   }
+
+  // Obtener conteo total de usuarios
+  static async getUserCount(): Promise<{ count: number; timestamp: string }> {
+    try {
+      const response = await api.get<{ success: boolean; data: { count: number; timestamp: string } }>('/users/count');
+      return handleApiResponse(response);
+    } catch (error) {
+      throw new Error(handleApiError(error as any));
+    }
+  }
 }

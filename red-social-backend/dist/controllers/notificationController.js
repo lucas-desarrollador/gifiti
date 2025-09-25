@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getUserAvisos = exports.cleanupExampleNotifications = exports.createWishCancelledNotification = exports.createWishReservedNotification = exports.getUnreadNotificationCount = exports.deleteNotification = exports.markAllNotificationsAsRead = exports.markNotificationAsRead = exports.getUserNotifications = void 0;
+exports.getUserAvisos = exports.cleanupExampleNotifications = exports.createWishCancelledNotification = exports.createWishReservedNotification = exports.getUnreadNotificationCount = exports.deleteNotification = exports.markNotificationAsRead = exports.getUserNotifications = void 0;
 const models_1 = require("../models");
 const sequelize_1 = require("sequelize");
 // Obtener notificaciones del usuario actual
@@ -77,25 +77,6 @@ const markNotificationAsRead = async (req, res) => {
     }
 };
 exports.markNotificationAsRead = markNotificationAsRead;
-// Marcar todas las notificaciones como leídas
-const markAllNotificationsAsRead = async (req, res) => {
-    try {
-        const user = req.user;
-        await models_1.Notification.update({ isRead: true }, { where: { userId: user.id, isRead: false } });
-        res.json({
-            success: true,
-            message: 'Todas las notificaciones marcadas como leídas',
-        });
-    }
-    catch (error) {
-        console.error('Error al marcar todas las notificaciones como leídas:', error);
-        res.status(500).json({
-            success: false,
-            message: 'Error interno del servidor',
-        });
-    }
-};
-exports.markAllNotificationsAsRead = markAllNotificationsAsRead;
 // Eliminar notificación (IGNORAR)
 const deleteNotification = async (req, res) => {
     try {

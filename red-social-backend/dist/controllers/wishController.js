@@ -9,6 +9,8 @@ const notificationController_1 = require("./notificationController");
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
+const sequelize_1 = require("sequelize");
+const database_1 = __importDefault(require("../config/database"));
 // Configurar multer para subir imágenes de deseos
 const storage = multer_1.default.diskStorage({
     destination: (req, file, cb) => {
@@ -253,33 +255,126 @@ const reorderWishes = async (req, res) => {
 exports.reorderWishes = reorderWishes;
 const exploreWishes = async (req, res) => {
     try {
-        const { page = 1, limit = 20, sortBy = 'recent' } = req.query;
+        const user = req.user;
+        const { page = 1, limit = 20 } = req.query;
         const offset = (Number(page) - 1) * Number(limit);
-        let order = [['createdAt', 'DESC']];
-        if (sortBy === 'popular') {
-            order = [['createdAt', 'DESC']]; // Por ahora solo por fecha
+        console.log('🔍 Explorando deseos para usuario:', user.id);
+        console.log('📊 Parámetros:', { page, limit, offset });
+        // 1. Obtener contactos del usuario (aceptados)
+        const userContacts = await models_1.Contact.findAll({
+            where: {
+                userId: user.id,
+                status: 'accepted'
+            },
+            attributes: ['contactId'],
+            paranoid: true // Esto excluye automáticamente los registros eliminados
+        });
+        const contactIds = userContacts.map(contact => contact.contactId).filter(id => id); // Filtrar IDs undefined
+        console.log('👥 Contactos del usuario:', contactIds.length);
+        // 2. Calcular límites para cada tipo
+        const totalLimit = Number(limit);
+        const halfLimit = Math.floor(totalLimit / 2);
+        const remainingLimit = totalLimit - halfLimit;
+        let contactWishes = [];
+        let unknownWishes = [];
+        // 3. Obtener deseos de contactos (50% del total)
+        if (contactIds.length > 0 && halfLimit > 0) {
+            // Obtener todos los deseos de contactos disponibles
+            const allContactWishes = await models_1.Wish.findAll({
+                where: {
+                    userId: contactIds
+                },
+                include: [
+                    {
+                        model: models_1.User,
+                        as: 'user',
+                        attributes: ['id', 'nickname', 'realName', 'profileImage']
+                    }
+                ],
+                order: [['createdAt', 'DESC']],
+                limit: totalLimit, // Obtener más para tener variedad
+                offset: offset
+            });
+            // Mezclar y tomar la cantidad deseada
+            const shuffledContactWishes = allContactWishes.sort(() => Math.random() - 0.5);
+            contactWishes = shuffledContactWishes.slice(0, halfLimit);
         }
-        const { count, rows } = await models_1.Wish.findAndCountAll({
-            where: { isReserved: false },
-            include: [
-                {
-                    model: models_1.User,
-                    as: 'user',
-                    attributes: ['id', 'nickname', 'realName', 'profileImage']
-                }
-            ],
-            order,
-            limit: Number(limit),
-            offset
+        // 4. Obtener deseos de usuarios desconocidos (50% del total)
+        if (remainingLimit > 0) {
+            // Obtener todos los deseos de usuarios desconocidos disponibles
+            const allUnknownWishes = await models_1.Wish.findAll({
+                where: {
+                    userId: { [sequelize_1.Op.notIn]: [...contactIds, user.id] } // Excluir contactos y deseos propios
+                },
+                include: [
+                    {
+                        model: models_1.User,
+                        as: 'user',
+                        attributes: ['id', 'nickname', 'realName', 'profileImage']
+                    }
+                ],
+                order: [['createdAt', 'DESC']],
+                limit: totalLimit, // Obtener más para tener variedad
+                offset: offset
+            });
+            // Mezclar y tomar la cantidad deseada
+            const shuffledUnknownWishes = allUnknownWishes.sort(() => Math.random() - 0.5);
+            unknownWishes = shuffledUnknownWishes.slice(0, remainingLimit);
+        }
+        // 5. Eliminar duplicados y mezclar resultados
+        const allWishes = [...contactWishes, ...unknownWishes];
+        // Eliminar duplicados por ID
+        const uniqueWishes = allWishes.filter((wish, index, self) => index === self.findIndex(w => w.id === wish.id));
+        // Si hay pocos deseos únicos, ajustar la distribución
+        let finalWishes = uniqueWishes;
+        if (uniqueWishes.length < totalLimit) {
+            console.log(`⚠️ Solo hay ${uniqueWishes.length} deseos únicos disponibles, ajustando distribución`);
+            // Si no hay suficientes deseos de contactos, llenar con desconocidos
+            if (contactWishes.length < halfLimit && unknownWishes.length > 0) {
+                const additionalUnknown = unknownWishes
+                    .filter(wish => !uniqueWishes.some(uw => uw.id === wish.id))
+                    .slice(0, totalLimit - uniqueWishes.length);
+                finalWishes = [...uniqueWishes, ...additionalUnknown];
+            }
+        }
+        // Eliminar duplicados nuevamente después de agregar deseos adicionales
+        const finalUniqueWishes = finalWishes.filter((wish, index, self) => index === self.findIndex(w => w.id === wish.id));
+        // Mezclar y limitar resultados
+        const shuffledWishes = finalUniqueWishes.sort(() => Math.random() - 0.5);
+        const limitedWishes = shuffledWishes.slice(0, totalLimit);
+        // 6. Obtener información de privacidad para cada usuario
+        const wishesWithPrivacy = await Promise.all(limitedWishes.map(async (wish) => {
+            if (wish.user) {
+                // Obtener configuración de privacidad del usuario
+                const privacySettings = await database_1.default.query('SELECT "isPublicProfile" FROM "privacy_settings" WHERE "userId" = :userId', {
+                    replacements: { userId: wish.user.id },
+                    type: sequelize_1.QueryTypes.SELECT
+                });
+                const isPublic = privacySettings.length > 0 ? privacySettings[0].isPublicProfile : true;
+                return {
+                    ...wish.toJSON(),
+                    user: {
+                        ...wish.user.toJSON(),
+                        isPublic
+                    }
+                };
+            }
+            return wish.toJSON();
+        }));
+        console.log('📊 Deseos encontrados:', {
+            contactos: contactWishes.length,
+            desconocidos: unknownWishes.length,
+            unicos: uniqueWishes.length,
+            finales: wishesWithPrivacy.length
         });
         res.json({
             success: true,
             data: {
-                data: rows,
-                total: count,
+                data: wishesWithPrivacy,
+                total: wishesWithPrivacy.length,
                 page: Number(page),
                 limit: Number(limit),
-                totalPages: Math.ceil(count / Number(limit))
+                hasMore: wishesWithPrivacy.length === Number(limit)
             }
         });
     }

@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../config/database"));
-const User_1 = __importDefault(require("./User"));
 class Contact extends sequelize_1.Model {
 }
 Contact.init({
@@ -59,8 +58,6 @@ Contact.init({
         },
     ],
 });
-// Definir relaciones
-Contact.belongsTo(User_1.default, { foreignKey: 'userId', as: 'user' });
-Contact.belongsTo(User_1.default, { foreignKey: 'contactId', as: 'contact' });
+// Las relaciones se definen en models/index.ts para evitar conflictos
 exports.default = Contact;
 //# sourceMappingURL=Contact.js.map

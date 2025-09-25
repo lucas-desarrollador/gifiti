@@ -5,8 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sequelize_1 = require("sequelize");
 const database_1 = __importDefault(require("../config/database"));
-const User_1 = __importDefault(require("./User"));
-const Wish_1 = __importDefault(require("./Wish"));
 class Notification extends sequelize_1.Model {
 }
 Notification.init({
@@ -74,9 +72,6 @@ Notification.init({
     tableName: 'notifications',
     timestamps: true,
 });
-// Definir relaciones
-Notification.belongsTo(User_1.default, { foreignKey: 'userId', as: 'user' });
-Notification.belongsTo(User_1.default, { foreignKey: 'relatedUserId', as: 'relatedUser' });
-Notification.belongsTo(Wish_1.default, { foreignKey: 'relatedWishId', as: 'relatedWish' });
+// Las relaciones se definen en models/index.ts para evitar conflictos
 exports.default = Notification;
 //# sourceMappingURL=Notification.js.map

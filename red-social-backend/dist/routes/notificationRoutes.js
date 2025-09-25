@@ -14,8 +14,6 @@ router.get('/avisos', notificationController_1.getUserAvisos);
 router.get('/count', notificationController_1.getUnreadNotificationCount);
 // Marcar notificación como leída
 router.put('/:notificationId/read', notificationController_1.markNotificationAsRead);
-// Marcar todas las notificaciones como leídas
-router.put('/read-all', notificationController_1.markAllNotificationsAsRead);
 // Eliminar notificación (IGNORAR)
 router.delete('/:notificationId', notificationController_1.deleteNotification);
 // Limpiar notificaciones de ejemplo

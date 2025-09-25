@@ -11,7 +11,11 @@ export interface User {
   province?: string;
   country?: string;
   postalAddress?: string;
+  addressDetails?: string;
   age?: number;
+  gender?: string;
+  subProfilesCount?: number;
+  selectedSubProfile?: string;
   isPublic?: boolean;
   createdAt: string;
   updatedAt: string;
@@ -117,7 +121,11 @@ export interface ProfileForm {
   province?: string;
   country?: string;
   postalAddress?: string;
+  addressDetails?: string;
   age?: number;
+  gender?: string;
+  subProfilesCount?: number;
+  selectedSubProfile?: string;
   profileImage?: File;
 }
 

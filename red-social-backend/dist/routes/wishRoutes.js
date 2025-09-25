@@ -10,6 +10,8 @@ router.use(auth_1.authenticateToken);
 router.get('/', wishController_1.getUserWishes);
 router.post('/', wishController_1.uploadWishImage, wishController_1.addWish);
 router.put('/reorder', wishController_1.reorderWishes);
+// Rutas de exploración (deben ir antes que las rutas con parámetros)
+router.get('/explore', wishController_1.exploreWishes);
 // Rutas de deseos específicos
 router.get('/:wishId', wishController_1.getUserWishesById);
 router.put('/:wishId', wishController_1.uploadWishImage, wishController_1.updateWish);
@@ -17,8 +19,6 @@ router.delete('/:wishId', wishController_1.deleteWish);
 // Rutas de reserva
 router.post('/:wishId/reserve', wishController_1.reserveWish);
 router.delete('/:wishId/reserve', wishController_1.cancelReservation);
-// Rutas de exploración
-router.get('/explore', wishController_1.exploreWishes);
 // Rutas de deseos de otros usuarios
 router.get('/user/:userId', wishController_1.getUserWishesById);
 exports.default = router;

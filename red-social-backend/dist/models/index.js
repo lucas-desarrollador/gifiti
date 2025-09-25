@@ -24,6 +24,16 @@ Object.defineProperty(exports, "PrivacySettings", { enumerable: true, get: funct
 User_1.default.hasMany(Wish_1.default, { foreignKey: 'userId', as: 'wishes' });
 User_1.default.hasMany(Contact_1.default, { foreignKey: 'userId', as: 'contacts' });
 User_1.default.hasMany(Contact_1.default, { foreignKey: 'contactId', as: 'contactRequests' });
+// Relaciones para Contact
+Contact_1.default.belongsTo(User_1.default, { foreignKey: 'userId', as: 'user' });
+Contact_1.default.belongsTo(User_1.default, { foreignKey: 'contactId', as: 'contact' });
+// Relaciones para Wish
+Wish_1.default.belongsTo(User_1.default, { foreignKey: 'userId', as: 'user' });
+Wish_1.default.belongsTo(User_1.default, { foreignKey: 'reservedBy', as: 'reservedByUser' });
+// Relaciones para Notification
+Notification_1.default.belongsTo(User_1.default, { foreignKey: 'userId', as: 'user' });
+Notification_1.default.belongsTo(User_1.default, { foreignKey: 'relatedUserId', as: 'relatedUser' });
+Notification_1.default.belongsTo(Wish_1.default, { foreignKey: 'relatedWishId', as: 'relatedWish' });
 // Relaciones para votos de reputación
 User_1.default.hasMany(ReputationVote_1.ReputationVote, { foreignKey: 'fromUserId', as: 'votesGiven' });
 User_1.default.hasMany(ReputationVote_1.ReputationVote, { foreignKey: 'toUserId', as: 'votesReceived' });
@@ -35,7 +45,7 @@ Wish_1.default.hasMany(Notification_1.default, { foreignKey: 'relatedWishId', as
 User_1.default.hasMany(BirthdayNotification_1.default, { foreignKey: 'userId', as: 'birthdayNotifications' });
 // Relaciones para configuraciones de privacidad
 User_1.default.hasOne(PrivacySettings_1.PrivacySettings, { foreignKey: 'userId', as: 'privacySettings' });
-PrivacySettings_1.PrivacySettings.belongsTo(User_1.default, { foreignKey: 'userId', as: 'user' });
+PrivacySettings_1.PrivacySettings.belongsTo(User_1.default, { foreignKey: 'userId', as: 'privacyUser' });
 // Sincronizar la base de datos
 const syncDatabase = async () => {
     try {
